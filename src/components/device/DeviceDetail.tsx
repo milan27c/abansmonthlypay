@@ -112,8 +112,9 @@ export default function DeviceDetail({
           </h2>
           <p className="mt-1 text-[15px] text-text-muted">
             {/* `specs.memory` already carries its own "RAM" suffix. */}
-            RAM: {device.specs.memory.replace(/\s*RAM$/, "")} · Storage:{" "}
-            {device.specs.storage}
+            RAM: {device.specs.memory.replace(/\s*RAM$/, "")}
+            <span className="mx-2 text-text-subtle">|</span>
+            Storage: {device.specs.storage}
           </p>
         </div>
 
