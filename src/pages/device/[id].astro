@@ -37,10 +37,13 @@ const fullName = `${brand?.name ?? ""} ${device.name}`.trim();
       <a
         href="/#phones"
         data-back
-        class="group inline-flex items-center gap-2.5 text-[15px] font-medium text-text transition-colors duration-200 ease-state hover:text-primary"
+        class="group inline-flex items-center gap-2 text-[15px] font-medium text-text transition-colors duration-200 ease-state hover:text-primary md:gap-2.5"
       >
+        {/* Bare chevron on a phone — the pill reads as a floating control over
+            the page background. It keeps its surface from `md`, where it sits
+            alone on a wide bar and needs the weight. */}
         <span
-          class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-surface shadow-rest transition-all duration-200 ease-state group-hover:scale-[1.02] group-hover:bg-primary-100 group-hover:text-primary"
+          class="grid h-6 w-6 shrink-0 place-items-center rounded-full transition-all duration-200 ease-state group-hover:text-primary md:h-10 md:w-10 md:bg-surface md:shadow-rest md:group-hover:scale-[1.02] md:group-hover:bg-primary-100"
         >
           <svg viewBox="0 0 16 16" class="h-4 w-4" aria-hidden="true">
             <path
