@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/layout/Nav.astro";
+import Footer from "../components/layout/Footer.astro";
+import ApplyFlow from "../components/apply/ApplyFlow";
+---
+
+<Layout
+  title="Apply — Abans Tiken Tika Pay"
+  description="Complete a short application and your nearest Abans showroom will be in touch."
+>
+  <Nav minimal />
+
+  <main class="mx-auto max-w-[1200px] px-6 py-10 sm:py-14">
+    {/*
+      client:only — the chosen device comes from the query string, so there is
+      nothing meaningful to render on the server and no mismatch to reconcile.
+      The page heading lives inside the island so it can give way to the
+      confirmation once the application has been sent.
+    */}
+    <ApplyFlow client:only="react" />
+  </main>
+
+  <Footer />
+</Layout>

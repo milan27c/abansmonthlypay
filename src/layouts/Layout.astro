@@ -1,23 +1,64 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import "../styles/global.css";
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "Tell Abans what you can pay each month and see the phones you can take home today.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en-LK">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#791F7F" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen bg-bg text-text antialiased">
+    <slot />
+
+    <script>
+      /**
+       * Scroll reveal for static markup: anything with `.reveal` fades and
+       * rises once, then is left alone. React islands run their own observer
+       * in `lib/hooks.ts` because they hydrate after this has already swept.
+       */
+      const sweep = () => {
+        const nodes = document.querySelectorAll<HTMLElement>(
+          ".reveal:not(.reveal-in)",
+        );
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          nodes.forEach((node) => node.classList.add("reveal-in"));
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("reveal-in");
+              // Trigger once — never re-animate on scroll back up.
+              observer.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+        );
+
+        nodes.forEach((node) => observer.observe(node));
+      };
+
+      sweep();
+      document.addEventListener("astro:after-swap", sweep);
+    </script>
+  </body>
+</html>

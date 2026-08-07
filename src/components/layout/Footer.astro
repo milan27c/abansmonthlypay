@@ -1,0 +1,43 @@
+---
+import { navLinks } from "../../lib/nav";
+import Logo from "./Logo.astro";
+
+const year = new Date().getFullYear();
+---
+
+{/*
+  One row: wordmark, the same three sections the header carries, and the line
+  that has to be there. Nothing else earns its place down here.
+*/}
+<footer class="mt-24 bg-text">
+  {/*
+    Three columns rather than `justify-between`, so the sections sit dead
+    centre instead of wherever the two outer blocks happen to leave them.
+    Below `lg` the three blocks crowd each other, so they stack instead.
+  */}
+  <div
+    class="mx-auto flex max-w-[1200px] flex-col items-center gap-6 px-6 py-10 lg:grid lg:grid-cols-3 lg:gap-8"
+  >
+    <Logo tone="dark" class="lg:justify-self-start" />
+
+    <nav
+      aria-label="Footer"
+      class="flex items-center gap-6 sm:gap-8 lg:justify-self-center"
+    >
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class="whitespace-nowrap text-[14px] text-white/55 transition-colors duration-200 ease-state hover:text-white"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <p class="whitespace-nowrap text-[13px] text-white/55 lg:justify-self-end">
+      © {year} Abans | Developed by Azbow
+    </p>
+  </div>
+</footer>

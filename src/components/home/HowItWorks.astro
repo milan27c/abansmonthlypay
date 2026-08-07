@@ -1,0 +1,469 @@
+---
+import { brandById } from "../../data/brands";
+import { deviceById } from "../../data/devices";
+import { showroomById } from "../../data/showrooms";
+import { headlinePlan } from "../../lib/affordability";
+import { formatLKR } from "../../lib/format";
+import Reveal from "../ui/Reveal.astro";
+
+/*
+  The four demo panels tell one continuous story, so their numbers come from the
+  real catalogue rather than being typed in: the budget below picks the device,
+  and the device's own headline plan supplies the monthly figure on card two.
+*/
+const DEMO_BUDGET = 4500;
+const SLIDER_MIN = 1000;
+const SLIDER_MAX = 6000;
+const DEMO_NAME = "Nimal Perera";
+
+const demoDevice = deviceById("realme-c85")!;
+const demoPlan = headlinePlan(demoDevice, DEMO_BUDGET);
+const demoDeviceName =
+  `${brandById(demoDevice.brand)?.name ?? ""} ${demoDevice.name}`.trim();
+const demoShowroom = showroomById("colombo-galle-road")!;
+
+const steps = [
+  {
+    title: "Tell Us Your Budget",
+    body: "Type what you can pay each month.",
+  },
+  {
+    title: "Pick a Phone That Fits",
+    body: "Every phone leads with its monthly figure.",
+  },
+  {
+    title: "Apply in Two Minutes",
+    body: "Your details and the showroom you want to collect from.",
+  },
+  {
+    title: "The Showroom Calls You",
+    body: "Your nearest branch confirms the plan with you.",
+  },
+];
+---
+
+<section id="how-it-works" class="scroll-mt-24 py-14 sm:py-20">
+  <div class="mx-auto max-w-[1200px] px-6">
+    <Reveal>
+      <div class="mx-auto max-w-xl text-center">
+        <h2 class="text-[28px] font-semibold tracking-[-0.02em] sm:text-[32px]">
+          Four Steps From Budget to Phone
+        </h2>
+        <p class="mt-3 text-[16px] text-text-muted">
+          Nothing is charged online. The plan is signed at the showroom.
+        </p>
+      </div>
+    </Reveal>
+
+    {/*
+      Each step is a card carrying a small, non-interactive demo of what that
+      step actually looks like in the product. The row plays once, left to
+      right, when it scrolls into view, then holds its finished state.
+    */}
+    <ol class="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+      {/*
+        The track sits behind the cards, so it is only visible in the gaps
+        between them — four beads on a thread again, but the thread is drawn
+        by the sweep travelling left to right as the row plays. The offset
+        lands it on the centre of the markers (28px card padding + 22px).
+      */}
+      <div
+        class="pointer-events-none absolute left-[12.5%] right-[12.5%] top-[50px] hidden h-px bg-divider lg:block"
+        aria-hidden="true"
+      >
+        <span class="demo-sweep absolute inset-y-0 w-[22%] bg-gradient-to-r from-transparent via-primary to-transparent"
+        ></span>
+      </div>
+
+      {
+        steps.map((step, index) => (
+          <li
+            class="reveal relative z-10"
+            style={`--reveal-delay:${index * 70}ms`}
+          >
+            <div class="group relative flex h-full flex-col overflow-hidden rounded-card bg-surface p-6 shadow-rest transition-all duration-200 ease-state hover:-translate-y-1 hover:shadow-raised sm:p-7">
+              {/*
+                Outlined at rest, filled on hover. The ring is a box-shadow, so
+                the fill arriving adds no layout.
+              */}
+              <span class="grid h-11 w-11 place-items-center rounded-full text-[13px] font-bold text-text tabular-nums ring-1 ring-inset ring-text/25 transition-all duration-200 ease-state group-hover:scale-105 group-hover:bg-text group-hover:text-white group-hover:ring-text">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+
+              <h3 class="mt-5 text-[17px] font-semibold tracking-[-0.01em]">
+                {step.title}
+              </h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-text-muted">
+                {step.body}
+              </p>
+
+              {/*
+                The demo panel is a picture of the step, not a control: no tab
+                stops, no pointer events, and hidden from screen readers, which
+                already have the heading and body above it.
+              */}
+              <div
+                class="pointer-events-none mt-7 select-none rounded-input bg-bg p-4"
+                aria-hidden="true"
+              >
+                {index === 0 && (
+                  <div>
+                    <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-text-subtle">
+                      Monthly budget
+                    </span>
+                    <p class="mt-1 text-[20px] font-bold leading-none text-primary tabular-nums">
+                      <span
+                        data-budget-value
+                        data-budget-min={SLIDER_MIN}
+                        data-budget-max={SLIDER_MAX}
+                        data-budget-target={DEMO_BUDGET}
+                      >
+                        {formatLKR(DEMO_BUDGET)}
+                      </span>
+                      <span class="ml-0.5 text-[12px] font-medium text-text-subtle">
+                        /mo
+                      </span>
+                    </p>
+
+                    <div class="mt-4 h-1.5 rounded-full bg-primary-100">
+                      <div
+                        class="relative h-full rounded-full bg-primary"
+                        style="width:100%"
+                        data-budget-fill
+                      >
+                        <span class="absolute right-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 translate-x-1/2 rounded-full bg-surface shadow-rest"></span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {index === 1 && (
+                  <div
+                    class="demo-rise flex items-center gap-3 rounded-input bg-surface p-2.5 shadow-rest"
+                    style="--demo-delay:1000ms"
+                  >
+                    <img
+                      src={demoDevice.image}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      class="h-12 w-12 shrink-0 object-contain"
+                    />
+                    <div class="min-w-0">
+                      <p class="truncate text-[13px] font-semibold text-text">
+                        {demoDeviceName}
+                      </p>
+                      <p class="mt-1 inline-flex rounded-full bg-primary-100 px-2 py-0.5 text-[12px] font-bold text-primary-700 tabular-nums">
+                        {formatLKR(demoPlan.monthly)}
+                        <span class="ml-0.5 font-medium">/mo</span>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {index === 2 && (
+                  <div>
+                    <span class="text-[11px] font-medium uppercase tracking-[0.06em] text-text-subtle">
+                      Full name
+                    </span>
+                    <div class="mt-2 flex h-10 items-center rounded-input bg-surface px-3 shadow-rest">
+                      <span
+                        class="text-[14px] text-text"
+                        data-typewriter={DEMO_NAME}
+                      >
+                        {DEMO_NAME}
+                      </span>
+                      <span class="demo-caret ml-0.5 h-4 w-[1.5px] bg-primary"></span>
+                    </div>
+                  </div>
+                )}
+
+                {index === 3 && (
+                  <div
+                    class="demo-rise flex items-center gap-3 rounded-input bg-surface p-3 shadow-rest"
+                    style="--demo-delay:2900ms"
+                  >
+                    <span class="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-success-soft">
+                      <span class="demo-ping absolute inset-0 rounded-full bg-success/25" />
+                      <span class="relative h-2.5 w-2.5 rounded-full bg-success"></span>
+                    </span>
+                    <div class="min-w-0">
+                      <p class="truncate text-[13px] font-semibold text-text">
+                        {demoShowroom.name}
+                      </p>
+                      <p class="mt-0.5 text-[12px] text-success">
+                        Calling to confirm<span class="demo-dots"
+                          ><span>.</span><span>.</span><span>.</span></span
+                        >
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  /*
+    Everything below is dormant until the row is in view: the script adds
+    `is-live` to the <ol>, which starts every animation from the same moment,
+    so the CSS-driven panels and the script-driven ones stay in step. Each
+    replay drops the class and re-adds it, which rewinds the whole set.
+
+    Resting state is the *finished* state, so a panel whose animation never
+    runs still reads as complete rather than blank.
+  */
+  .demo-sweep {
+    left: -22%;
+    opacity: 0;
+  }
+
+  .demo-rise,
+  .demo-caret {
+    opacity: 1;
+  }
+
+  .is-live .demo-sweep {
+    animation: demo-sweep 3400ms var(--ease-state) both;
+  }
+
+  .is-live .demo-rise {
+    animation: demo-rise 500ms var(--ease-entrance) both;
+    animation-delay: var(--demo-delay, 0ms);
+  }
+
+  /* Blinks while the name is typed, then fades out — the field is filled. */
+  .is-live .demo-caret {
+    animation:
+      demo-blink 700ms linear 1900ms 2,
+      demo-caret-out 200ms var(--ease-state) 3300ms both;
+  }
+
+  .is-live .demo-ping {
+    animation: demo-ping 2200ms var(--ease-state) 3200ms infinite;
+  }
+
+  /* Three dots riding in turn — the one thing that keeps running, because
+     "calling" is a state that has not finished yet. */
+  .is-live .demo-dots span {
+    animation: demo-dot 1400ms var(--ease-state) infinite;
+  }
+
+  .is-live .demo-dots span:nth-child(2) {
+    animation-delay: 200ms;
+  }
+
+  .is-live .demo-dots span:nth-child(3) {
+    animation-delay: 400ms;
+  }
+
+  /*
+    The global reduced-motion rule collapses duration but leaves `animation-delay`
+    alone, which would hold the later panels on their opening keyframe for whole
+    seconds. Drop the animations entirely and state the finished look instead.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    .demo-sweep,
+    .demo-rise,
+    .demo-caret,
+    .demo-ping,
+    .demo-dots span {
+      animation: none !important;
+    }
+
+    .demo-rise {
+      opacity: 1;
+      transform: none;
+    }
+
+    .demo-caret {
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-sweep {
+    0% {
+      left: -22%;
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes demo-blink {
+    0%,
+    49% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-caret-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    70%,
+    100% {
+      transform: scale(1.9);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-dot {
+    0%,
+    60%,
+    100% {
+      opacity: 0.35;
+    }
+    30% {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  import { formatLKR } from "../../lib/format";
+
+  /*
+    Two of the four panels can't be done in CSS — the budget figure has to be
+    formatted as LKR while it counts, and the name has to be revealed by the
+    character rather than by width, which a proportional typeface makes uneven.
+    Both read their copy off the markup, so the values stay in the component.
+  */
+  const row = document.querySelector<HTMLElement>("#how-it-works ol");
+  if (row) {
+    const value = row.querySelector<HTMLElement>("[data-budget-value]");
+    const fill = row.querySelector<HTMLElement>("[data-budget-fill]");
+    const typed = row.querySelector<HTMLElement>("[data-typewriter]");
+
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const COUNT_MS = 1600;
+    const TYPE_START_MS = 1900;
+    const TYPE_STEP_MS = 60;
+    /** Everything has settled by here — the last panel lands at 3400ms. */
+    const SETTLE_MS = 3600;
+    /** How long the finished row is held before it plays again. */
+    const HOLD_MS = 3000;
+
+    const setBudget = (amount: number, min: number, max: number) => {
+      if (value) value.textContent = formatLKR(amount);
+      if (fill) {
+        const ratio = (amount - min) / (max - min);
+        fill.style.width = `${Math.min(Math.max(ratio, 0), 1) * 100}%`;
+      }
+    };
+
+    const timers: number[] = [];
+    let counting = 0;
+
+    const stop = () => {
+      // Timeouts and intervals share one id pool, so one clear covers both.
+      timers.splice(0).forEach((timer) => window.clearInterval(timer));
+      cancelAnimationFrame(counting);
+    };
+
+    const play = () => {
+      // Dropping the class and re-adding it after a style flush rewinds every
+      // CSS animation in the row, so the whole sequence restarts in step.
+      row.classList.remove("is-live");
+      void row.offsetWidth;
+      row.classList.add("is-live");
+
+      if (value) {
+        const min = Number(value.dataset.budgetMin);
+        const max = Number(value.dataset.budgetMax);
+        const target = Number(value.dataset.budgetTarget);
+        const start = performance.now();
+
+        const tick = (now: number) => {
+          const t = Math.min((now - start) / COUNT_MS, 1);
+          // Same ease-out shape as the entrance easing, so it settles rather
+          // than stopping dead.
+          const eased = 1 - Math.pow(1 - t, 3);
+          setBudget(min + (target - min) * eased, min, max);
+          if (t < 1) counting = requestAnimationFrame(tick);
+        };
+
+        setBudget(min, min, max);
+        counting = requestAnimationFrame(tick);
+      }
+
+      if (typed) {
+        const full = typed.dataset.typewriter ?? "";
+        typed.textContent = "";
+        timers.push(
+          window.setTimeout(() => {
+            let i = 0;
+            const step = window.setInterval(() => {
+              i += 1;
+              typed.textContent = full.slice(0, i);
+              if (i >= full.length) window.clearInterval(step);
+            }, TYPE_STEP_MS);
+            timers.push(step);
+          }, TYPE_START_MS),
+        );
+      }
+
+      // Hold the finished row, then run it again.
+      timers.push(window.setTimeout(play, SETTLE_MS + HOLD_MS));
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (still) {
+            // Nothing to loop: the panels are already in their finished state.
+            row.classList.add("is-live");
+            observer.unobserve(entry.target);
+            return;
+          }
+          // The loop only runs while the row is on screen.
+          if (entry.isIntersecting) {
+            stop();
+            play();
+          } else {
+            stop();
+          }
+        });
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(row);
+  }
+</script>

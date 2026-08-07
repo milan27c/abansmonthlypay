@@ -1,0 +1,21 @@
+---
+/**
+ * Scroll reveal wrapper for static sections. Shares the `.reveal` /
+ * `.reveal-in` contract in global.css with the React `Reveal.tsx`, and is
+ * driven by the observer in `Layout.astro`.
+ *
+ * Where a wrapper div would break semantics (list items, table rows), put
+ * `class="reveal"` on the element itself instead of using this component.
+ */
+interface Props {
+  /** Stagger offset in ms — 60–80ms per grid item reads best. */
+  delay?: number;
+  class?: string;
+}
+
+const { delay = 0, class: className } = Astro.props;
+---
+
+<div class:list={["reveal", className]} style={`--reveal-delay:${delay}ms`}>
+  <slot />
+</div>

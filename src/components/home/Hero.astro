@@ -1,0 +1,103 @@
+---
+/**
+ * Campaign banner hero. The artwork already carries the Abans Tiken Tika Pay
+ * lockup, the talent and the devices, so nothing is composed on top of it here
+ * beyond the headline and the two calls to action.
+ *
+ * Both banners run at their native aspect ratio — the intrinsic `width`/`height`
+ * below reserve the correct box at each breakpoint, so there is no layout shift
+ * as they load and no cropping or distortion of the artwork:
+ *
+ *   hero.png        1983 x 793   (2.5 : 1)   640px and up
+ *   mobilehero.png   971 x 1619  (0.6 : 1)   below 640px
+ *
+ * `<picture>` with a `media` source means only the matching banner is fetched —
+ * they are ~2MB each.
+ */
+---
+
+<section class="relative isolate overflow-hidden">
+  <picture>
+    <source
+      media="(min-width: 640px)"
+      srcset="/hero.png"
+      width="1983"
+      height="793"
+    />
+    <img
+      src="/mobilehero.png"
+      width="971"
+      height="1619"
+      alt="Abans Tiken Tika Pay — pay for your phone monthly"
+      fetchpriority="high"
+      decoding="async"
+      class="block w-full"
+    />
+  </picture>
+
+  {/*
+    Bottom-weighted scrim. A flat one muddied the whole banner; this puts the
+    contrast only where the type sits and leaves the artwork clean.
+  */}
+  <div
+    aria-hidden="true"
+    class="absolute inset-0 bg-gradient-to-t from-primary-900/80 via-primary-900/25 to-transparent"
+  >
+  </div>
+
+  {/*
+    Centred horizontally, but anchored into the clear lower band of the artwork —
+    dead-centre lands the headline on the Tiken Tika Pay lockup on desktop and the
+    buttons on the phones on mobile.
+  */}
+  <div
+    class="absolute inset-0 grid items-end justify-items-center px-6 pb-[5%] sm:pb-[4%]"
+  >
+    <div class="flex w-full flex-col items-center text-center">
+      {/*
+        Two lines on mobile, one on desktop — the landscape banner's clear strip
+        is only tall enough for a single line.
+
+        Desktop type is sized in `vw` so it scales with the banner (which is a
+        fixed 2.5:1 of the viewport width); a fixed px size overflows the clear
+        strip on narrow desktops and undershoots on wide ones. Clamped at 50px so
+        the line stays inside the gap between the two people.
+      */}
+      <h1
+        class="enter text-glow text-[30px] font-bold leading-[1.08] tracking-[-0.02em] text-white sm:text-[clamp(18px,3.1vw,52px)]"
+        style="--enter-delay:80ms"
+      >
+        {/*
+          Blocks that go inline at sm, rather than a hidden <br>. Astro strips the
+          whitespace between the two spans, so the sentence gap is an explicit
+          margin in `em` — it tracks the clamped font size instead of collapsing.
+        */}
+        <span class="block sm:inline">Pay Monthly.</span>
+        <span class="block sm:ml-[0.3em] sm:inline">Take It Home Today.</span>
+      </h1>
+
+      <div
+        class="enter mt-5 flex w-full flex-col items-center justify-center gap-3 sm:mt-4 sm:w-auto sm:flex-row lg:mt-7"
+        style="--enter-delay:220ms"
+      >
+        <a
+          href="#affordability"
+          class="inline-flex h-12 w-full max-w-[320px] items-center justify-center rounded-full bg-white px-7 text-[15px] font-semibold text-primary shadow-rest transition-all duration-200 ease-state hover:scale-[1.02] hover:bg-primary-50 hover:shadow-raised sm:h-11 sm:w-auto sm:px-6 lg:h-13 lg:px-8 lg:text-[16px]"
+        >
+          Set your monthly budget
+        </a>
+
+        {/*
+          Outlined button — the one place the no-borders rule is relaxed. It uses
+          a ring (box-shadow) rather than a real border so it adds no layout.
+        */}
+        <a
+          href="#how-it-works"
+          class="inline-flex h-12 w-full max-w-[320px] items-center justify-center rounded-full px-7 text-[15px] font-semibold text-white ring-1 ring-inset ring-white/70 transition-all duration-200 ease-state hover:scale-[1.02] hover:bg-white/15 hover:ring-white sm:h-11 sm:w-auto sm:px-6 lg:h-13 lg:px-8 lg:text-[16px]"
+        >
+          How it works
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

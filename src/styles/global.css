@@ -1,0 +1,318 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Every colour, shadow, radius and easing in the product comes from here.
+   Never hardcode a hex in a component.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Surfaces */
+  --color-bg: #f6f6f6;
+  --color-surface: #ffffff;
+
+  /* Primary — shades and tints of #791F7F (hsl 296 61% 31%) */
+  --color-primary-50: #fbf3fc;
+  --color-primary-100: #f6e3f8;
+  --color-primary-200: #ebc4ee;
+  --color-primary-300: #d996de;
+  --color-primary-400: #c34dcb;
+  --color-primary-500: #a42aac;
+  --color-primary-600: #791f7f;
+  --color-primary-700: #631968;
+  --color-primary-800: #4a134e;
+  --color-primary-900: #320e34;
+
+  /* Primary aliases */
+  --color-primary: #791f7f;
+  --color-primary-hover: #631968;
+  --color-primary-soft: rgba(121, 31, 127, 0.08);
+  --color-primary-softer: rgba(121, 31, 127, 0.04);
+
+  /* Text */
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b6b6b;
+  --color-text-subtle: #9a9a9a;
+
+  /* Utility */
+  --color-divider: #e8e8e8;
+  --color-error: #c1121f;
+  --color-error-soft: rgba(193, 18, 31, 0.08);
+  --color-warning: #b85c00;
+  --color-warning-soft: rgba(184, 92, 0, 0.1);
+  --color-success: #1e8e5a;
+  --color-success-soft: rgba(30, 142, 90, 0.1);
+
+  /* Type */
+  --font-sans:
+    "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+
+  /* Elevation — two levels only */
+  --shadow-rest: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-raised: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  /* Shape */
+  --radius-card: 16px;
+  --radius-input: 12px;
+
+  /* Motion */
+  --ease-entrance: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-state: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Inputs never carry a border — only a focus ring. */
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+    border: 0;
+  }
+
+  /* Kill the number spinners on the affordability field. */
+  input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion primitives
+   Shared by the React islands and the static .astro sections so scroll reveal
+   behaves identically in both.
+--------------------------------------------------------------------------- */
+
+@layer components {
+  /* Scroll reveal: fade + rise, triggered once. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 500ms var(--ease-entrance),
+      transform 500ms var(--ease-entrance);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Above-the-fold entrances play immediately on load. */
+  .enter {
+    animation: enter-rise 500ms var(--ease-entrance) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  /*
+    Slow breathing halo on the hero headline. Long and shallow on purpose — it
+    should read as light behind the type, not as a blinking effect.
+
+    The resting shadow is declared on the class itself, not only in the
+    keyframes: reduced motion neutralises the animation, and without a base
+    value the glow would disappear altogether rather than simply stop moving.
+  */
+  .text-glow {
+    text-shadow:
+      0 0 20px rgba(255, 255, 255, 0.22),
+      0 0 52px rgba(255, 255, 255, 0.12);
+    animation: text-glow 4s var(--ease-state) infinite;
+  }
+
+  /* Grid items fading in/out as filters change. */
+  .card-enter {
+    animation: card-in 400ms var(--ease-entrance) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  .card-exit {
+    animation: card-out 200ms var(--ease-state) both;
+  }
+
+  /* Stepper transitions. */
+  .step-from-right {
+    animation: step-in-right 300ms var(--ease-entrance) both;
+  }
+
+  .step-from-left {
+    animation: step-in-left 300ms var(--ease-entrance) both;
+  }
+
+  .modal-backdrop-in {
+    animation: fade-in 200ms var(--ease-state) both;
+  }
+
+  .modal-panel-in {
+    animation: modal-in 400ms var(--ease-entrance) both;
+  }
+
+  /* Hides content visually but keeps it for screen readers. */
+  .sr-only-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@keyframes enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes text-glow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 20px rgba(255, 255, 255, 0.22),
+      0 0 52px rgba(255, 255, 255, 0.12);
+  }
+  50% {
+    text-shadow:
+      0 0 28px rgba(255, 255, 255, 0.42),
+      0 0 76px rgba(255, 255, 255, 0.24);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes card-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes step-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes step-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — collapse everything to opacity, or nothing at all.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
