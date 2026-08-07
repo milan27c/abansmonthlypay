@@ -33,36 +33,12 @@ const { minimal = false } = Astro.props;
             ))}
           </nav>
 
-          <div class="flex items-center gap-2">
-            <a
-              href="/#affordability"
-              class="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[15px] font-semibold text-white shadow-rest transition-all duration-200 ease-state hover:scale-[1.02] hover:bg-primary-hover hover:shadow-raised sm:px-6"
-            >
-              {/* The full line does not fit beside the logo and the menu
-                  button on a phone, so the small screen drops the lead-in. */}
-              <span class="hidden sm:inline">Let's Find Your Phone</span>
-              <span class="sm:hidden">Find Your Phone</span>
-            </a>
-
-            <button
-              type="button"
-              data-menu-toggle
-              aria-expanded="false"
-              aria-controls="mobile-menu"
-              aria-label="Open menu"
-              class="grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full bg-surface text-text-muted shadow-rest transition-all duration-200 ease-state hover:scale-[1.02] hover:text-primary md:hidden"
-            >
-              <svg viewBox="0 0 20 20" class="h-5 w-5" aria-hidden="true">
-                <path
-                  d="M3.5 6h13M3.5 10h13M3.5 14h13"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </button>
-          </div>
+          <a
+            href="/#affordability"
+            class="inline-flex h-11 items-center rounded-full bg-primary px-5 text-[15px] font-semibold text-white shadow-rest transition-all duration-200 ease-state hover:scale-[1.02] hover:bg-primary-hover hover:shadow-raised sm:px-6"
+          >
+            Let's Find Your Phone
+          </a>
         </>
       )
     }
@@ -71,38 +47,24 @@ const { minimal = false } = Astro.props;
       minimal && (
         <a
           href="/"
-          class="text-[15px] text-text-muted transition-colors duration-200 ease-state hover:text-primary"
+          class="group inline-flex items-center gap-2 text-[15px] text-text-muted transition-colors duration-200 ease-state hover:text-primary"
         >
+          {/* Same chevron as the device page's back control. */}
+          <svg viewBox="0 0 16 16" class="h-4 w-4 shrink-0" aria-hidden="true">
+            <path
+              d="M9.5 3.5 5 8l4.5 4.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
           Back to phones
         </a>
       )
     }
   </div>
-
-  {
-    !minimal && (
-      <nav
-        id="mobile-menu"
-        aria-label="Main"
-        hidden
-        class="px-6 pb-4 md:hidden"
-      >
-        <ul class="flex flex-col gap-1 rounded-card bg-surface p-2 shadow-rest">
-          {links.map((link) => (
-            <li>
-              <a
-                href={link.href}
-                data-menu-link
-                class="block rounded-input px-4 py-3 text-[15px] text-text transition-colors duration-200 ease-state hover:bg-primary-soft hover:text-primary"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    )
-  }
 </header>
 
 <script>
@@ -116,32 +78,5 @@ const { minimal = false } = Astro.props;
 
     update();
     window.addEventListener("scroll", update, { passive: true });
-  }
-
-  const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
-  const menu = document.querySelector<HTMLElement>("#mobile-menu");
-
-  if (toggle && menu) {
-    const setOpen = (open: boolean) => {
-      menu.hidden = !open;
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    };
-
-    toggle.addEventListener("click", () => {
-      setOpen(menu.hidden === true);
-    });
-
-    // Any link closes it — every destination is on this page.
-    menu.querySelectorAll("[data-menu-link]").forEach((link) => {
-      link.addEventListener("click", () => setOpen(false));
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && !menu.hidden) {
-        setOpen(false);
-        toggle.focus();
-      }
-    });
   }
 </script>

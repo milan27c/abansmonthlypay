@@ -81,12 +81,12 @@ const steps = [
             class="reveal relative z-10"
             style={`--reveal-delay:${index * 70}ms`}
           >
-            <div class="group relative flex h-full flex-col overflow-hidden rounded-card bg-surface p-6 shadow-rest transition-all duration-200 ease-state hover:-translate-y-1 hover:shadow-raised sm:p-7">
+            <div class="group relative flex h-full flex-col overflow-hidden rounded-card bg-surface p-6 text-center shadow-rest transition-all duration-200 ease-state hover:-translate-y-1 hover:shadow-raised sm:p-7">
               {/*
                 Outlined at rest, filled on hover. The ring is a box-shadow, so
                 the fill arriving adds no layout.
               */}
-              <span class="grid h-11 w-11 place-items-center rounded-full text-[13px] font-bold text-text tabular-nums ring-1 ring-inset ring-text/25 transition-all duration-200 ease-state group-hover:scale-105 group-hover:bg-text group-hover:text-white group-hover:ring-text">
+              <span class="mx-auto grid h-11 w-11 place-items-center rounded-full text-[13px] font-bold text-text tabular-nums ring-1 ring-inset ring-text/25 transition-all duration-200 ease-state group-hover:scale-105 group-hover:bg-text group-hover:text-white group-hover:ring-text">
                 {String(index + 1).padStart(2, "0")}
               </span>
 
@@ -103,7 +103,7 @@ const steps = [
                 already have the heading and body above it.
               */}
               <div
-                class="pointer-events-none mt-7 select-none rounded-input bg-bg p-4"
+                class="pointer-events-none mt-7 select-none rounded-input bg-bg p-4 text-left"
                 aria-hidden="true"
               >
                 {index === 0 && (

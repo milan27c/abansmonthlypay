@@ -39,7 +39,9 @@ export default function AffordabilityInput({
     <div className="rounded-card bg-surface p-7 shadow-rest sm:p-10">
       <label
         htmlFor="monthly-budget"
-        className="block text-[28px] font-semibold tracking-[-0.02em] text-text sm:text-[32px]"
+        /* Wraps to two lines on a phone, so it carries its own tight leading
+           rather than the loose body line-height. */
+        className="block text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-text sm:text-[32px]"
       >
         What Can You Pay Each Month?
       </label>
@@ -123,7 +125,7 @@ export default function AffordabilityInput({
           </p>
         ) : (
           <p className="text-[15px] text-text-muted">
-            <span className="text-[24px] font-bold tabular-nums text-primary sm:text-[28px]">
+            <span className="font-bold tabular-nums text-primary">
               {Math.round(animatedCount)}
             </span>{" "}
             {matchCount === 1 ? "phone fits" : "phones fit"} this budget

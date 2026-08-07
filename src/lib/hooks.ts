@@ -88,6 +88,23 @@ export function useDebounced<T>(value: T, delay = 250): T {
   return debounced;
 }
 
+/**
+ * Reads `?budget=` off the URL — how the shop hands its budget to a page it
+ * navigates to. Zero until after mount, so the server render and the first
+ * client render agree and prerendered pages stay hydratable.
+ */
+export function useQueryBudget(): number {
+  const [budget, setBudget] = useState(0);
+
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get("budget");
+    const value = Number(raw);
+    if (Number.isFinite(value) && value > 0) setBudget(value);
+  }, []);
+
+  return budget;
+}
+
 /** Traps Tab inside a container and calls `onClose` on Escape. For modals. */
 export function useFocusTrap(
   active: boolean,

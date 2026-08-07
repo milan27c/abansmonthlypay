@@ -77,6 +77,23 @@ export default function Shop() {
 
   const nothingFits = affordable.length === 0;
 
+  /*
+    The modal is a desktop control. On a phone the same content is a full page
+    with a back button, so the detail view gets the whole screen instead of
+    stacking a near-full-height sheet over the grid. The budget travels on the
+    query string so the page can headline the same plan the card did.
+  */
+  const showDevice = (device: Device) => {
+    if (window.matchMedia("(min-width: 768px)").matches) {
+      setOpenDevice(device);
+      return;
+    }
+
+    window.location.href = `/device/${device.id}${
+      activeBudget > 0 ? `?budget=${activeBudget}` : ""
+    }`;
+  };
+
   return (
     <>
       {/*
@@ -126,7 +143,7 @@ export default function Shop() {
               devices={visible}
               budget={activeBudget}
               animationKey={`${activeBudget}-${activeBrand ?? "all"}-${showOverBudget}`}
-              onSelect={setOpenDevice}
+              onSelect={showDevice}
             />
           ) : (
             <div className="rounded-card bg-surface px-6 py-16 text-center shadow-rest">

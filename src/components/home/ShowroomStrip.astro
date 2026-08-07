@@ -15,34 +15,42 @@ const NETWORK_SHOWROOMS = "400+";
   <div class="mx-auto max-w-[1200px] px-6">
     <Reveal>
       {/*
-        The banner is 3:1, so desktop carries that ratio and the artwork lands
-        uncropped. Below `lg` the panel takes its height from the copy instead
-        and the image crops to the centre.
+        Two banners, one panel. Below `sm` the portrait artwork carries its own
+        971 x 1619 ratio — the map sits in its top half and the copy drops into
+        the empty band beneath it. From `sm` the landscape banner takes over:
+        3:1 at `lg` so it lands uncropped, and above that the panel takes its
+        height from the copy and the image crops.
       */}
       <div
-        class="relative overflow-hidden rounded-card bg-primary-900 lg:aspect-[3/1]"
+        class="relative overflow-hidden rounded-card bg-primary-900 max-sm:aspect-[971/1619] lg:aspect-[3/1]"
       >
         {/*
-          No scrim: the banner ships with the wash already baked into it.
+          No scrim: both banners ship with the wash already baked into them.
 
-          It also ships with a feathered transparent margin — the artwork is a
-          2172 x 724 block flush to the top-right of a 2439 x 936 canvas, so
-          drawn `inset-0` it leaves the panel's own background showing down the
-          left and along the bottom. Sizing the image to 2439/2172 x 936/724 of
-          the panel and anchoring it top-right lands that block exactly on the
-          box; `object-cover` then handles the crop at widths where the panel is
-          not the artwork's own 3:1.
+          The landscape one also ships with a feathered transparent margin — the
+          artwork is a 2172 x 724 block flush to the top-right of a 2439 x 936
+          canvas, so drawn `inset-0` it leaves the panel's own background
+          showing down the left and along the bottom. Sizing the image to
+          2439/2172 x 936/724 of the panel and anchoring it top-right lands that
+          block exactly on the box; `object-cover` then handles the crop at
+          widths where the panel is not the artwork's own 3:1. The portrait one
+          is full-bleed, so below `sm` it is simply drawn `inset-0`.
+
+          One `<img>` under a `<picture>`, so only the matching file is fetched.
         */}
-        <img
-          src="/banner2.png"
-          alt=""
-          loading="lazy"
-          decoding="async"
-          class="absolute right-0 top-0 h-[129.282%] w-[112.293%] max-w-none object-cover object-right-top"
-        />
+        <picture>
+          <source media="(max-width: 639px)" srcset="/bannermobile.png" />
+          <img
+            src="/banner2.png"
+            alt=""
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 h-full w-full object-cover sm:bottom-auto sm:left-auto sm:right-0 sm:top-0 sm:h-[129.282%] sm:w-[112.293%] sm:max-w-none sm:object-right-top"
+          />
+        </picture>
 
         <div
-          class="relative flex h-full flex-col justify-center px-7 py-12 sm:px-12 sm:py-16 lg:max-w-[60%]"
+          class="relative flex h-full flex-col justify-end px-7 py-12 max-sm:text-center sm:justify-center sm:px-12 sm:py-16 lg:max-w-[60%]"
         >
           <h2
             class="text-[28px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]"
@@ -51,7 +59,10 @@ const NETWORK_SHOWROOMS = "400+";
             Within Reach
           </h2>
 
-          <dl class="mt-8 flex flex-wrap gap-x-16 gap-y-8 sm:mt-10">
+          {/* One stat per row on a phone, side by side from `sm`. */}
+          <dl
+            class="mt-8 grid grid-cols-1 gap-x-16 gap-y-8 sm:mt-10 sm:flex sm:flex-wrap"
+          >
             <div>
               <dd
                 class="text-[40px] font-bold leading-none tracking-[-0.02em] text-white tabular-nums"

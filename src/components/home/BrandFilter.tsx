@@ -20,10 +20,12 @@ export default function BrandFilter({
   if (brands.length === 0) return null;
 
   return (
+    // Wraps at every width — the whole brand list is visible on a phone
+    // without a sideways scroll that hides half of it.
     <div
       role="group"
       aria-label="Filter by brand"
-      className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+      className="flex flex-wrap gap-2"
     >
       <Chip selected={selected === null} onClick={() => onSelect(null)}>
         All brands

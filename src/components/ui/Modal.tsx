@@ -43,7 +43,9 @@ export default function Modal({
         className={cn(
           "modal-panel-in relative w-full max-w-4xl bg-surface shadow-raised",
           "rounded-t-card sm:rounded-card",
-          "max-h-[92vh] overflow-y-auto sm:max-h-[88vh]",
+          // `dvh`, not `vh`: on a phone `vh` measures the viewport with the
+          // browser chrome retracted, which hides the foot of the panel under it.
+          "max-h-[92dvh] overflow-y-auto sm:max-h-[88dvh]",
           className,
         )}
       >
