@@ -8,7 +8,7 @@
  * below reserve the correct box at each breakpoint, so there is no layout shift
  * as they load and no cropping or distortion of the artwork:
  *
- *   heronew2.png      1983 x 793   (2.5 : 1)   640px and up
+ *   slidernew.png      1983 x 793   (2.5 : 1)   640px and up
  *   mobilehero2.png  941 x 1672  (0.56 : 1)  below 640px
  *
  * `<picture>` with a `media` source means only the matching banner is fetched —
@@ -20,7 +20,7 @@
   <picture>
     <source
       media="(min-width: 640px)"
-      srcset="/heronew2.png"
+      srcset="/slidernew.png"
       width="1983"
       height="793"
     />
