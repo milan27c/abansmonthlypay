@@ -66,7 +66,7 @@ export default function StepReview({
         Check Everything Over
       </h2>
       <p className="mt-1.5 text-[15px] text-text-muted">
-        Once you submit, this goes to the showroom you picked.
+        Once you submit, this enquiry goes to the showroom you picked.
       </p>
 
       <div className="mt-7 flex flex-col gap-4">
@@ -94,13 +94,8 @@ export default function StepReview({
 
         <Section title="Your Details" onEdit={() => onEdit(0)}>
           <Row label="Full name" value={data.fullName} />
-          <Row label="Email" value={data.email} />
+          <Row label="Email" value={data.email || "—"} />
           <Row label="Mobile" value={data.phone} />
-          <Row label="NIC" value={data.nic} />
-        </Section>
-
-        <Section title="Location" onEdit={() => onEdit(1)}>
-          <Row label="Address" value={data.address} />
           <Row
             label="Province"
             value={provinceById(data.province)?.name ?? "—"}
@@ -111,7 +106,7 @@ export default function StepReview({
           />
         </Section>
 
-        <Section title="Showroom" onEdit={() => onEdit(2)}>
+        <Section title="Showroom" onEdit={() => onEdit(1)}>
           <Row label="Branch" value={showroom?.name ?? "—"} />
           <Row label="Address" value={showroom?.address ?? "—"} />
           <Row label="Phone" value={showroom?.phone ?? "—"} />

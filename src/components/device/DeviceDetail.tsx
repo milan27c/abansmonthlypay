@@ -60,7 +60,7 @@ export default function DeviceDetail({
         window.location.href = applyHref;
       }}
     >
-      Apply for this device
+      Enquire About This Device
     </Button>
   );
 

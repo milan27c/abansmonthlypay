@@ -24,7 +24,7 @@ export default function StepShowroom({
       </h2>
       <p className="mt-1.5 text-[15px] text-text-muted">
         {district
-          ? `Showrooms in ${district.name}. This branch will handle your application.`
+          ? `Showrooms in ${district.name}. This branch will handle your enquiry.`
           : "Go back and choose a district to see showrooms."}
       </p>
 

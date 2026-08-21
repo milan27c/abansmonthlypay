@@ -13,13 +13,12 @@ import {
 } from "../../lib/validation";
 import Button from "../ui/Button";
 import Confirmation from "./Confirmation";
-import StepLocation from "./StepLocation";
 import StepPersonal from "./StepPersonal";
 import StepReview from "./StepReview";
 import StepShowroom from "./StepShowroom";
 import Stepper from "./Stepper";
 
-const STEPS = ["Personal", "Location", "Showroom", "Review"];
+const STEPS = ["Your Details", "Showroom", "Review"];
 const LAST_STEP = STEPS.length - 1;
 
 /**
@@ -153,7 +152,7 @@ export default function ApplyFlow() {
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-medium tracking-[0.01em] text-text-subtle">
-              Applying for
+              Enquiring about
             </p>
             <p className="mt-0.5 text-[15px] font-semibold">{fullName}</p>
           </div>
@@ -205,10 +204,10 @@ export default function ApplyFlow() {
     <>
       <div className="mb-8">
         <h1 className="text-[32px] font-semibold tracking-[-0.02em] sm:text-[40px]">
-          Apply for Your Phone
+          Enquire For This Device
         </h1>
         <p className="mt-2 max-w-lg text-[16px] text-text-muted">
-          Four short steps. Nothing is charged and no payment details are
+          Three short steps. Nothing is charged and no payment details are
           needed.
         </p>
       </div>
@@ -236,15 +235,6 @@ export default function ApplyFlow() {
               )}
 
               {step === 1 && (
-                <StepLocation
-                  data={data}
-                  errors={errors}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              )}
-
-              {step === 2 && (
                 <StepShowroom
                   data={data}
                   errors={errors}
@@ -252,7 +242,7 @@ export default function ApplyFlow() {
                 />
               )}
 
-              {step === 3 && (
+              {step === 2 && (
                 <StepReview
                   data={data}
                   device={device}
@@ -283,7 +273,7 @@ export default function ApplyFlow() {
                     disabled={submitting}
                     aria-busy={submitting}
                   >
-                    {submitting ? "Sending…" : "Submit application"}
+                    {submitting ? "Sending…" : "Send enquiry"}
                   </Button>
                 )}
               </div>

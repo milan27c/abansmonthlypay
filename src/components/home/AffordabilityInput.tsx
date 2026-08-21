@@ -3,8 +3,7 @@ import { cn } from "../../lib/cn";
 import { formatNumber } from "../../lib/format";
 import { useAnimatedNumber } from "../../lib/hooks";
 
-/* Every quick pick returns at least one phone — the cheapest plan is ~4,150. */
-const PRESETS = [5000, 7500, 10000, 15000, 20000, 25000];
+const PRESETS = [2000, 5000, 7500, 10000, 15000, 20000, 25000];
 
 interface AffordabilityInputProps {
   value: number;
@@ -43,7 +42,7 @@ export default function AffordabilityInput({
            rather than the loose body line-height. */
         className="block text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-text sm:text-[32px]"
       >
-        What Can You Pay Each Month?
+        How Much Can You Pay Monthly?
       </label>
       <p className="mt-2 text-[15px] text-text-muted">
         Enter an amount and we will show you every phone that fits.

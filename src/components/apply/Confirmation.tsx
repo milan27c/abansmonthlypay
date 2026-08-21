@@ -44,7 +44,7 @@ export default function Confirmation({
       </span>
 
       <h1 className="mt-7 text-[28px] font-semibold tracking-[-0.02em] sm:text-[32px]">
-        Application Sent
+        Enquiry Sent
       </h1>
 
       <p className="mx-auto mt-3 max-w-md text-[16px] leading-relaxed text-text-muted">

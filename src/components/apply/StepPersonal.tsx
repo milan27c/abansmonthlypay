@@ -1,4 +1,6 @@
 import Input from "../ui/Input";
+import Select from "../ui/Select";
+import { districtsOf, provinces } from "../../data/locations";
 import type { ApplicationData, FieldErrors } from "../../lib/validation";
 
 interface StepPersonalProps {
@@ -14,13 +16,15 @@ export default function StepPersonal({
   onChange,
   onBlur,
 }: StepPersonalProps) {
+  const districts = data.province ? districtsOf(data.province) : [];
+
   return (
     <div>
       <h2 className="text-[24px] font-semibold tracking-[-0.02em]">
         Your Details
       </h2>
       <p className="mt-1.5 text-[15px] text-text-muted">
-        The showroom uses these to reach you about the application.
+        The showroom uses these to reach you about your enquiry.
       </p>
 
       <div className="mt-7 grid gap-x-6 gap-y-2 sm:grid-cols-2">
@@ -43,6 +47,7 @@ export default function StepPersonal({
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
+          hint="Optional"
           value={data.email}
           error={errors.email}
           onChange={(event) => onChange("email", event.target.value)}
@@ -62,19 +67,36 @@ export default function StepPersonal({
           onBlur={() => onBlur("phone")}
         />
 
-        <div className="sm:col-span-2">
-          <Input
-            label="NIC number"
-            name="nic"
-            autoComplete="off"
-            placeholder="199912345678"
-            hint="Old or new format both work."
-            value={data.nic}
-            error={errors.nic}
-            onChange={(event) => onChange("nic", event.target.value)}
-            onBlur={() => onBlur("nic")}
-          />
-        </div>
+        <Select
+          label="Province"
+          name="province"
+          placeholder="Select province"
+          value={data.province}
+          error={errors.province}
+          options={provinces.map((province) => ({
+            value: province.id,
+            label: province.name,
+          }))}
+          onChange={(event) => onChange("province", event.target.value)}
+          onBlur={() => onBlur("province")}
+        />
+
+        <Select
+          label="District"
+          name="district"
+          placeholder={
+            data.province ? "Select district" : "Choose a province first"
+          }
+          disabled={!data.province}
+          value={data.district}
+          error={errors.district}
+          options={districts.map((district) => ({
+            value: district.id,
+            label: district.name,
+          }))}
+          onChange={(event) => onChange("district", event.target.value)}
+          onBlur={() => onBlur("district")}
+        />
       </div>
     </div>
   );
