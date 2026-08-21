@@ -42,12 +42,11 @@ export default function StepPersonal({
         </div>
 
         <Input
-          label="Email address"
+          label="Email address (optional)"
           name="email"
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
-          hint="Optional"
           value={data.email}
           error={errors.email}
           onChange={(event) => onChange("email", event.target.value)}

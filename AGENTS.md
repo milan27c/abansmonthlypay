@@ -242,18 +242,25 @@ public/
   products/<n>/   front.png — the only shot used; there is no gallery
   hero.png        1983 x 793  — hero banner, 640px and up
   mobilehero.png   971 x 1619 — hero banner, below 640px
-  banner2.png     2439 x 936  — showroom strip background; the artwork is only
-                  the 2172 x 724 block flush to its top-right corner
 ```
 
-The showroom banner puts the storefront on the left and the pinned map on the right, and
-the copy sits left. It ships pre-darkened, so the strip lays no scrim or gradient over it
-— any replacement artwork has to carry its own wash or the white copy will not hold.
-
-It also carries a feathered transparent margin, so it is not drawn `inset-0`: the image
-is sized to `2439/2172` x `936/724` of the panel and anchored top-right, which lands the
-opaque block exactly on the box. A replacement cropped to its own artwork can go back to
-plain `inset-0` + `object-cover`.
+The showroom strip's backdrop is not a raster image: it's blurred washes of
+`--color-primary-700`/`-500` and black (`bg-.../NN blur-[Npx]` blobs, `-z-10` behind the
+content grid) over the `--color-primary-900` panel. That keeps it independent of any one
+image's aspect ratio, so the panel sizes to its content instead of a fixed banner ratio.
+The island map on its right is inline SVG — district outlines and pin coordinates live in
+`src/data/srilanka-map.ts` (traced at low fidelity, decorative not survey-accurate). Every
+branch in `showrooms.ts` gets its own dummy pin, fanned a few viewBox units around its
+district's polygon centroid when a district carries more than one — Colombo's three sit
+close enough to read as one glow until zoomed in. Each pin opens a small `bg-surface` card
+on hover/focus with that stand-in showroom's name, address and phone; Colombo's and
+Kandy's first branch gets the larger, pulsing hub marker. The +/- controls (and
+double-click, and drag once zoomed) scale and pan the map — the pin layer and its tooltip
+layer are two DOM siblings sharing one transform, so tooltips can render past the map's
+own clipped, rounded edge instead of being cut off by it; see the component's `<script>`
+for the anchor-preserving zoom math. `banner2.png` / `bannermobile.png` are unused
+leftovers from the prior version of this section — safe to delete if nothing else picks
+them up.
 
 The two hero banners are real campaign artwork: they already carry the Abans Tiken Tika
 Pay lockup, the talent and the devices. Serve them through `<picture>` with a `media`

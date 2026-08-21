@@ -1,10 +1,10 @@
 ---
 /**
- * The image already carries its own purple/black wordmark, so on the dark
- * footer it sits on a white plate rather than being recoloured.
+ * `dark` swaps in the pre-made white wordmark (footer.png) so the logo sits
+ * directly on the dark footer with no backing plate.
  */
 interface Props {
-  /** `dark` sets a white backing plate for use on dark backgrounds. */
+  /** `dark` swaps in the white wordmark for use on dark backgrounds. */
   tone?: "light" | "dark";
   class?: string;
 }
@@ -20,12 +20,9 @@ const { tone = "light", class: className } = Astro.props;
     className,
   ]}
 >
-  <span
-    class:list={[
-      "inline-flex items-center rounded-[11px] transition-colors duration-200 ease-state",
-      tone === "dark" ? "bg-white px-3 py-1.5" : "",
-    ]}
-  >
-    <img src="/smartphonelogo.png" alt="Abans Smartphones" class="h-8 w-auto" />
-  </span>
+  <img
+    src={tone === "dark" ? "/footer.png" : "/smartphonelogo.png"}
+    alt="Abans Smartphones"
+    class:list={["w-auto", tone === "dark" ? "h-11" : "h-8"]}
+  />
 </a>

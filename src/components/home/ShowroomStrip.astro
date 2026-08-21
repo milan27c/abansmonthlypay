@@ -1,6 +1,12 @@
 ---
 import Reveal from "../ui/Reveal.astro";
-import { provinces } from "../../data/locations";
+import { provinces, districtById } from "../../data/locations";
+import { showroomsIn } from "../../data/showrooms";
+import {
+  districtShapes,
+  MAP_VIEWBOX_WIDTH,
+  MAP_VIEWBOX_HEIGHT,
+} from "../../data/srilanka-map";
 
 const districtCount = provinces.flatMap((p) => p.districts).length;
 
@@ -9,87 +15,469 @@ const districtCount = provinces.flatMap((p) => p.districts).length;
   sample of branches for the district cascade to filter against.
 */
 const NETWORK_SHOWROOMS = "400+";
+
+/* The two hubs get a bigger, pulsing marker — everyone else is a plain dot. */
+const HUB_DISTRICTS = new Set(["colombo", "kandy"]);
+
+/*
+  Every branch in a district gets its own pin, fanned out a few viewBox units
+  around that district's centroid rather than stacked on one point. At rest
+  the offset reads as a single glow; the zoom control is what actually pulls
+  the cluster apart so a district like Colombo shows its three branches.
+*/
+const JITTER_RADIUS = 8;
+
+const pins = districtShapes.flatMap((shape) => {
+  const district = districtById(shape.id);
+  const branches = showroomsIn(shape.id);
+  if (!district || branches.length === 0) return [];
+
+  return branches.map((showroom, index) => {
+    const angle = (index / branches.length) * Math.PI * 2 - Math.PI / 2;
+    const offset = branches.length > 1 ? JITTER_RADIUS : 0;
+    const cx = shape.cx + Math.cos(angle) * offset;
+    const cy = shape.cy + Math.sin(angle) * offset;
+    return {
+      showroom,
+      districtName: district.name,
+      xPct: (cx / MAP_VIEWBOX_WIDTH) * 100,
+      yPct: (cy / MAP_VIEWBOX_HEIGHT) * 100,
+      hub: HUB_DISTRICTS.has(shape.id) && index === 0,
+    };
+  });
+});
 ---
 
-<section id="showrooms" class="scroll-mt-24 py-14 sm:py-20">
+<section id="showrooms" class="scroll-mt-24 py-10 sm:py-14">
   <div class="mx-auto max-w-[1200px] px-6">
     <Reveal>
-      {/*
-        Two banners, one panel. Below `sm` the portrait artwork carries its own
-        971 x 1619 ratio — the map sits in its top half and the copy drops into
-        the empty band beneath it. From `sm` the landscape banner takes over:
-        3:1 at `lg` so it lands uncropped, and above that the panel takes its
-        height from the copy and the image crops.
-      */}
       <div
-        class="relative overflow-hidden rounded-card bg-primary-900 max-sm:aspect-[971/1619] lg:aspect-[3/1]"
+        class="relative isolate overflow-hidden rounded-[28px] bg-primary-900"
       >
         {/*
-          No scrim: both banners ship with the wash already baked into them.
-
-          The landscape one also ships with a feathered transparent margin — the
-          artwork is a 2172 x 724 block flush to the top-right of a 2439 x 936
-          canvas, so drawn `inset-0` it leaves the panel's own background
-          showing down the left and along the bottom. Sizing the image to
-          2439/2172 x 936/724 of the panel and anchoring it top-right lands that
-          block exactly on the box; `object-cover` then handles the crop at
-          widths where the panel is not the artwork's own 3:1. The portrait one
-          is full-bleed, so below `sm` it is simply drawn `inset-0`.
-
-          One `<img>` under a `<picture>`, so only the matching file is fetched.
+          No banner art here — the backdrop is soft, blurred washes of the
+          darkest primary shades and black over the base panel colour, then
+          one more flat black wash on top to hold it dark. Independent of any
+          one image's ratio, so the panel sizes to its content.
         */}
-        <picture>
-          <source media="(max-width: 639px)" srcset="/bannermobile.png" />
-          <img
-            src="/banner2.png"
-            alt=""
-            loading="lazy"
-            decoding="async"
-            class="absolute inset-0 h-full w-full object-cover sm:bottom-auto sm:left-auto sm:right-0 sm:top-0 sm:h-[129.282%] sm:w-[112.293%] sm:max-w-none sm:object-right-top"
-          />
-        </picture>
+        <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <div
+            class="absolute -left-20 -top-24 h-[380px] w-[380px] rounded-full bg-primary-700/50 blur-[110px]"
+          >
+          </div>
+          <div
+            class="absolute -right-24 top-1/4 h-[420px] w-[420px] rounded-full bg-primary-500/15 blur-[120px]"
+          >
+          </div>
+          <div
+            class="absolute -bottom-28 left-1/4 h-[360px] w-[360px] rounded-full bg-black/70 blur-[110px]"
+          >
+          </div>
+          <div
+            class="absolute -bottom-16 -right-16 h-[320px] w-[320px] rounded-full bg-black/60 blur-[100px]"
+          >
+          </div>
+          <div class="absolute inset-0 bg-black/25"></div>
+        </div>
 
         <div
-          class="relative flex h-full flex-col justify-end px-7 py-12 max-sm:text-center sm:justify-center sm:px-12 sm:py-16 lg:max-w-[60%]"
+          class="relative grid gap-8 px-7 py-8 max-sm:text-center sm:px-10 sm:py-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-6 lg:py-12"
         >
-          <h2
-            class="text-[28px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]"
-          >
-            Your Nearest Abans Showroom<br class="hidden lg:inline" /> Is Always
-            Within Reach
-          </h2>
+          <div>
+            <h2
+              class="text-[28px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]"
+            >
+              Your Nearest Abans Showroom<br class="hidden lg:inline" /> Is Always
+              Within Reach
+            </h2>
 
-          {/* One stat per row on a phone, side by side from `sm`. */}
-          <dl
-            class="mt-8 grid grid-cols-1 gap-x-16 gap-y-8 sm:mt-10 sm:flex sm:flex-wrap"
+            {/* One stat per row on a phone, side by side from `sm`. */}
+            <dl
+              class="mt-8 grid grid-cols-1 gap-x-16 gap-y-8 sm:mt-10 sm:flex sm:flex-wrap max-sm:justify-center"
+            >
+              <div>
+                <dd
+                  class="text-[40px] font-bold leading-none tracking-[-0.02em] text-white tabular-nums"
+                >
+                  {NETWORK_SHOWROOMS}
+                </dd>
+                <dt
+                  class="mt-2 text-[13px] font-medium tracking-[0.01em] text-primary-300"
+                >
+                  Showrooms
+                </dt>
+              </div>
+              <div>
+                <dd
+                  class="text-[40px] font-bold leading-none tracking-[-0.02em] text-white tabular-nums"
+                >
+                  {districtCount}
+                </dd>
+                <dt
+                  class="mt-2 text-[13px] font-medium tracking-[0.01em] text-primary-300"
+                >
+                  Districts covered
+                </dt>
+              </div>
+            </dl>
+          </div>
+
+          {/*
+            Dummy locations: every branch in a district gets its own pin,
+            fanned out around that district's polygon, each opening a small
+            card with a stand-in showroom's name, address and phone on hover
+            or focus. Colombo and Kandy read as the network's two hubs, so
+            their first branch gets the larger, pulsing mark. The +/- controls
+            zoom and pan the map so branches fanned close together — Colombo's
+            three, say — pull apart into individually tappable pins.
+          */}
+          <div
+            data-map-root
+            class="relative mx-auto w-full max-w-[170px] sm:max-w-[190px] lg:max-w-[180px]"
+            style={`aspect-ratio: ${MAP_VIEWBOX_WIDTH} / ${MAP_VIEWBOX_HEIGHT}`}
           >
-            <div>
-              <dd
-                class="text-[40px] font-bold leading-none tracking-[-0.02em] text-white tabular-nums"
-              >
-                {NETWORK_SHOWROOMS}
-              </dd>
-              <dt
-                class="mt-2 text-[13px] font-medium tracking-[0.01em] text-primary-300"
-              >
-                Showrooms
-              </dt>
+            {/*
+              Two layers share one pan/zoom transform, applied to both by the
+              script below. The map art and pin dots sit in the clipped one,
+              rounded and `overflow-hidden` so they never spill past the box
+              while zoomed. Tooltip cards sit in a second, unclipped layer on
+              top — otherwise a card opening near the map's edge would be cut
+              off by that same clip. Each dot is linked to its card by a
+              matching `data-pin-trigger` / `data-pin-tooltip` id, shown and
+              hidden by the script rather than CSS `:hover`, since the two no
+              longer share a common ancestor to scope a `group` off of.
+            */}
+            <div
+              data-map-viewport
+              class="absolute inset-0 overflow-hidden rounded-2xl"
+            >
+              <div data-map-content class="map-layer absolute inset-0">
+                <svg
+                  viewBox={`0 0 ${MAP_VIEWBOX_WIDTH} ${MAP_VIEWBOX_HEIGHT}`}
+                  class="absolute inset-0 h-full w-full drop-shadow-[0_0_28px_rgba(235,196,238,0.18)]"
+                  aria-hidden="true"
+                >
+                  {
+                    districtShapes.map((shape) => (
+                      <path
+                        d={shape.d}
+                        class="fill-primary-300/[0.16] stroke-primary-200/40"
+                        stroke-width="1.6"
+                        stroke-linejoin="round"
+                      />
+                    ))
+                  }
+                </svg>
+
+                {
+                  pins.map((pin) => (
+                    <div
+                      class="absolute -translate-x-1/2 -translate-y-1/2"
+                      style={`left:${pin.xPct}%; top:${pin.yPct}%`}
+                    >
+                      <button
+                        type="button"
+                        data-pin-trigger={pin.showroom.id}
+                        class={`showroom-pin relative flex items-center justify-center rounded-full transition-transform duration-150 ease-state hover:scale-125 focus-visible:scale-125 ${pin.hub ? "h-3 w-3 bg-white" : "h-1.5 w-1.5 bg-primary-200"}`}
+                        aria-label={`${pin.showroom.name} — ${pin.districtName}`}
+                      >
+                        {pin.hub && (
+                          <span
+                            class="hub-pin-ring pointer-events-none absolute -inset-2 rounded-full border border-white/70"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </button>
+                    </div>
+                  ))
+                }
+              </div>
             </div>
-            <div>
-              <dd
-                class="text-[40px] font-bold leading-none tracking-[-0.02em] text-white tabular-nums"
-              >
-                {districtCount}
-              </dd>
-              <dt
-                class="mt-2 text-[13px] font-medium tracking-[0.01em] text-primary-300"
-              >
-                Districts covered
-              </dt>
+
+            <div
+              data-map-overlay
+              class="map-layer pointer-events-none absolute inset-0"
+            >
+              {
+                pins.map((pin) => (
+                  <div
+                    class="absolute -translate-x-1/2 -translate-y-1/2"
+                    style={`left:${pin.xPct}%; top:${pin.yPct}%`}
+                  >
+                    <div
+                      role="tooltip"
+                      data-pin-tooltip={pin.showroom.id}
+                      class="pin-tooltip rounded-[12px] bg-surface p-3 text-left shadow-raised"
+                    >
+                      <p class="text-[13px] font-medium text-text">
+                        {pin.showroom.name}
+                      </p>
+                      <p class="mt-1 text-[12px] leading-snug text-text-muted">
+                        {pin.showroom.address}
+                      </p>
+                      <p class="mt-1 text-[12px] font-medium text-primary">
+                        {pin.showroom.phone}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              }
             </div>
-          </dl>
+
+            <div
+              class="pointer-events-none absolute -right-2 -top-2 z-30 flex flex-col gap-1.5"
+            >
+              <button
+                type="button"
+                data-zoom-in
+                aria-label="Zoom in on the showroom map"
+                class="zoom-btn pointer-events-auto grid h-7 w-7 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/25 backdrop-blur-sm transition-colors duration-150 ease-state hover:bg-white/20 disabled:opacity-30"
+              >
+                <svg viewBox="0 0 16 16" class="h-3 w-3" aria-hidden="true">
+                  <path
+                    d="M8 3v10M3 8h10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                data-zoom-out
+                aria-label="Zoom out on the showroom map"
+                class="zoom-btn pointer-events-auto grid h-7 w-7 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/25 backdrop-blur-sm transition-colors duration-150 ease-state hover:bg-white/20 disabled:opacity-30"
+                disabled
+              >
+                <svg viewBox="0 0 16 16" class="h-3 w-3" aria-hidden="true">
+                  <path
+                    d="M3 8h10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </Reveal>
   </div>
 </section>
+
+<style>
+  .map-layer {
+    transform-origin: 50% 50%;
+    transition: transform 300ms var(--ease-state);
+    will-change: transform;
+  }
+
+  .showroom-pin {
+    box-shadow:
+      0 0 0 3px rgba(235, 196, 238, 0.18),
+      0 0 10px 2px rgba(235, 196, 238, 0.5);
+  }
+
+  /*
+    Counter-scaled against --map-scale (set by the script) so a card stays
+    the same on-screen size at any zoom level instead of growing with the
+    map underneath it. Shown/hidden by the script toggling `.is-visible`,
+    not `:hover` — its trigger dot lives in a different layer.
+  */
+  .pin-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    z-index: 20;
+    width: 176px;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(var(--inv-map-scale, 1));
+    transform-origin: bottom center;
+    transition:
+      opacity 150ms var(--ease-state),
+      transform 150ms var(--ease-state);
+  }
+
+  .pin-tooltip.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(var(--inv-map-scale, 1));
+  }
+
+  .hub-pin-ring {
+    animation: hub-pulse 2.6s var(--ease-state) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hub-pin-ring {
+      animation: none !important;
+      opacity: 0;
+    }
+  }
+
+  @keyframes hub-pulse {
+    0% {
+      transform: scale(0.85);
+      opacity: 0.6;
+    }
+    70%,
+    100% {
+      transform: scale(1.9);
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-map-root]");
+  const viewport = document.querySelector<HTMLElement>("[data-map-viewport]");
+  const content = document.querySelector<HTMLElement>("[data-map-content]");
+  const overlay = document.querySelector<HTMLElement>("[data-map-overlay]");
+  const zoomInBtn = document.querySelector<HTMLButtonElement>("[data-zoom-in]");
+  const zoomOutBtn = document.querySelector<HTMLButtonElement>("[data-zoom-out]");
+
+  if (root && viewport && content && overlay && zoomInBtn && zoomOutBtn) {
+    const MIN_SCALE = 1;
+    const MAX_SCALE = 3;
+    const STEP = 0.75;
+
+    let scale = MIN_SCALE;
+    let x = 0;
+    let y = 0;
+
+    const clampNum = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max);
+
+    const apply = () => {
+      const transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      content.style.transform = transform;
+      overlay.style.transform = transform;
+      root.style.setProperty("--inv-map-scale", String(1 / scale));
+      viewport.style.cursor = scale > MIN_SCALE ? "grab" : "";
+      zoomOutBtn.disabled = scale <= MIN_SCALE;
+      zoomInBtn.disabled = scale >= MAX_SCALE;
+    };
+
+    /*
+      Keeps the point under (anchorX, anchorY) — viewport-local px — fixed on
+      screen while the scale changes, then clamps the pan so the map never
+      drifts past its own edge.
+    */
+    const zoomTo = (nextScale: number, anchorX: number, anchorY: number) => {
+      const target = clampNum(nextScale, MIN_SCALE, MAX_SCALE);
+      const rect = viewport.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+
+      const contentOffsetX = (anchorX - cx - x) / scale;
+      const contentOffsetY = (anchorY - cy - y) / scale;
+
+      scale = target;
+      x = anchorX - cx - contentOffsetX * scale;
+      y = anchorY - cy - contentOffsetY * scale;
+
+      const maxX = ((scale - 1) * rect.width) / 2;
+      const maxY = ((scale - 1) * rect.height) / 2;
+      x = clampNum(x, -maxX, maxX);
+      y = clampNum(y, -maxY, maxY);
+
+      apply();
+    };
+
+    zoomInBtn.addEventListener("click", () => {
+      const rect = viewport.getBoundingClientRect();
+      zoomTo(scale + STEP, rect.width / 2, rect.height / 2);
+    });
+
+    zoomOutBtn.addEventListener("click", () => {
+      const rect = viewport.getBoundingClientRect();
+      zoomTo(scale - STEP, rect.width / 2, rect.height / 2);
+    });
+
+    viewport.addEventListener("dblclick", (event) => {
+      const rect = viewport.getBoundingClientRect();
+      const anchorX = event.clientX - rect.left;
+      const anchorY = event.clientY - rect.top;
+      zoomTo(scale >= MAX_SCALE ? MIN_SCALE : scale + STEP, anchorX, anchorY);
+    });
+
+    // Drag to pan once zoomed in. A small move threshold keeps an ordinary
+    // tap on a pin working as a click rather than being eaten as a drag.
+    let dragging = false;
+    let moved = false;
+    let startPointerX = 0;
+    let startPointerY = 0;
+    let startX = 0;
+    let startY = 0;
+
+    viewport.addEventListener("pointerdown", (event) => {
+      if (scale <= MIN_SCALE) return;
+      dragging = true;
+      moved = false;
+      startPointerX = event.clientX;
+      startPointerY = event.clientY;
+      startX = x;
+      startY = y;
+      content.style.transition = "none";
+      overlay.style.transition = "none";
+      viewport.setPointerCapture(event.pointerId);
+    });
+
+    viewport.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      const dx = event.clientX - startPointerX;
+      const dy = event.clientY - startPointerY;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+      if (!moved) return;
+
+      const rect = viewport.getBoundingClientRect();
+      const maxX = ((scale - 1) * rect.width) / 2;
+      const maxY = ((scale - 1) * rect.height) / 2;
+      x = clampNum(startX + dx, -maxX, maxX);
+      y = clampNum(startY + dy, -maxY, maxY);
+      viewport.style.cursor = "grabbing";
+      apply();
+    });
+
+    const endDrag = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      content.style.transition = "";
+      overlay.style.transition = "";
+      viewport.style.cursor = scale > MIN_SCALE ? "grab" : "";
+      if (viewport.hasPointerCapture(event.pointerId)) {
+        viewport.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    viewport.addEventListener("pointerup", endDrag);
+    viewport.addEventListener("pointercancel", endDrag);
+
+    // Each dot lives in the clipped layer, its tooltip in the unclipped one
+    // above it — linked by id and toggled here rather than by CSS `:hover`.
+    root
+      .querySelectorAll<HTMLButtonElement>("[data-pin-trigger]")
+      .forEach((trigger) => {
+        const id = trigger.dataset.pinTrigger;
+        const tooltip = id
+          ? root.querySelector<HTMLElement>(
+              `[data-pin-tooltip="${id}"]`,
+            )
+          : null;
+        if (!tooltip) return;
+
+        const show = () => tooltip.classList.add("is-visible");
+        const hide = () => tooltip.classList.remove("is-visible");
+
+        trigger.addEventListener("mouseenter", show);
+        trigger.addEventListener("mouseleave", hide);
+        trigger.addEventListener("focus", show);
+        trigger.addEventListener("blur", hide);
+      });
+
+    apply();
+  }
+</script>

@@ -202,6 +202,33 @@ export default function ApplyFlow() {
 
   return (
     <>
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-6 flex flex-wrap items-center gap-2 text-[13px] text-text-muted"
+      >
+        <a
+          href="/"
+          className="transition-colors duration-200 ease-state hover:text-primary"
+        >
+          Home
+        </a>
+        <span aria-hidden="true" className="text-text-subtle">
+          /
+        </span>
+        <a
+          href={`/device/${device.id}`}
+          className="transition-colors duration-200 ease-state hover:text-primary"
+        >
+          {fullName}
+        </a>
+        <span aria-hidden="true" className="text-text-subtle">
+          /
+        </span>
+        <span aria-current="page" className="font-medium text-text">
+          Enquire
+        </span>
+      </nav>
+
       <div className="mb-8">
         <h1 className="text-[32px] font-semibold tracking-[-0.02em] sm:text-[40px]">
           Enquire For This Device

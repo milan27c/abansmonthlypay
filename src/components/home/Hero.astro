@@ -8,8 +8,8 @@
  * below reserve the correct box at each breakpoint, so there is no layout shift
  * as they load and no cropping or distortion of the artwork:
  *
- *   hero2.png        1983 x 793   (2.5 : 1)   640px and up
- *   mobilehero.png   971 x 1619  (0.6 : 1)   below 640px
+ *   heronew2.png      1983 x 793   (2.5 : 1)   640px and up
+ *   mobilehero2.png  941 x 1672  (0.56 : 1)  below 640px
  *
  * `<picture>` with a `media` source means only the matching banner is fetched —
  * they are ~2MB each.
@@ -20,14 +20,14 @@
   <picture>
     <source
       media="(min-width: 640px)"
-      srcset="/hero2.png"
+      srcset="/heronew2.png"
       width="1983"
       height="793"
     />
     <img
-      src="/mobilehero.png"
-      width="971"
-      height="1619"
+      src="/mobilehero2.png"
+      width="941"
+      height="1672"
       alt="Abans Tiken Tika Pay — pay for your phone monthly"
       fetchpriority="high"
       decoding="async"
@@ -64,7 +64,7 @@
         the line stays inside the gap between the two people.
       */}
       <h1
-        class="enter text-glow text-[30px] font-bold leading-[1.08] tracking-[-0.02em] text-white sm:text-[clamp(18px,3.1vw,52px)]"
+        class="enter text-glow text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-white sm:text-[clamp(18px,3.1vw,52px)]"
         style="--enter-delay:80ms"
       >
         {/*

@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import Nav from "../../components/layout/Nav.astro";
 import Footer from "../../components/layout/Footer.astro";
 import DeviceDetail from "../../components/device/DeviceDetail";
 import { brandById } from "../../data/brands";
@@ -25,42 +26,32 @@ const fullName = `${brand?.name ?? ""} ${device.name}`.trim();
   title={`${fullName} — Abans Tiken Tika Pay`}
   description={`${fullName} from ${formatLKR(lowestMonthly(device))} a month with Abans Tiken Tika Pay.`}
 >
-  {/*
-    A detail screen, so the top bar is a back control rather than the site nav:
-    the way back to the grid is the only navigation that matters here.
-  */}
-  <header
-    class="sticky top-0 z-40 bg-bg/80 backdrop-blur-xl transition-shadow duration-200 ease-state"
-    data-nav
-  >
-    <div class="mx-auto flex h-18 max-w-[1200px] items-center px-6">
+  <Nav />
+
+  <main class="mx-auto max-w-[1200px] px-6 py-8 sm:py-12">
+    {/*
+      A simple breadcrumb replaces the old back-control header. "Home" keeps
+      the smart back-to-grid behaviour below — returning by history preserves
+      the shop's budget, brand filter and scroll position — with the href as
+      the fallback for a direct visit, middle-click or new tab.
+    */}
+    <nav
+      aria-label="Breadcrumb"
+      class="mb-6 flex flex-wrap items-center gap-2 text-[13px] text-text-muted"
+    >
       <a
         href="/#phones"
         data-back
-        class="group inline-flex items-center gap-2 text-[15px] font-medium text-text transition-colors duration-200 ease-state hover:text-primary md:gap-2.5"
+        class="transition-colors duration-200 ease-state hover:text-primary"
       >
-        {/* Bare chevron on a phone — the pill reads as a floating control over
-            the page background. It keeps its surface from `md`, where it sits
-            alone on a wide bar and needs the weight. */}
-        <span
-          class="grid h-6 w-6 shrink-0 place-items-center rounded-full transition-all duration-200 ease-state group-hover:text-primary md:h-10 md:w-10 md:bg-surface md:shadow-rest md:group-hover:scale-[1.02] md:group-hover:bg-primary-100"
-        >
-          <svg viewBox="0 0 16 16" class="h-4 w-4" aria-hidden="true">
-            <path
-              d="M9.5 3.5 5 8l4.5 4.5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"></path>
-          </svg>
-        </span>
-        Back
+        Home
       </a>
-    </div>
-  </header>
+      <span aria-hidden="true" class="text-text-subtle">/</span>
+      <span aria-current="page" class="font-medium text-text">
+        {fullName}
+      </span>
+    </nav>
 
-  <main class="mx-auto max-w-[1200px] px-6 py-8 sm:py-12">
     {/*
       `overflow-clip`, not `overflow-hidden`: both round off the product panel,
       but `hidden` makes this a scroll container, which would strand the sticky
@@ -79,17 +70,8 @@ const fullName = `${brand?.name ?? ""} ${device.name}`.trim();
 </Layout>
 
 <script>
-  const nav = document.querySelector<HTMLElement>("[data-nav]");
-
-  if (nav) {
-    // Nav only earns its shadow once the page has moved.
-    const update = () => {
-      nav.classList.toggle("shadow-rest", window.scrollY > 8);
-    };
-
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-  }
+  // Nav's own script handles its scroll shadow — this page only adds the
+  // back-button behaviour.
 
   /*
     Going back through history keeps the shop exactly as it was left — budget,

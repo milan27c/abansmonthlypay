@@ -56,7 +56,7 @@ export default function AffordabilityInput({
         )}
         onClick={() => inputRef.current?.focus()}
       >
-        <span className="text-[28px] font-bold leading-none text-text-subtle sm:text-[34px]">
+        <span className="text-[20px] font-bold leading-none text-text-subtle sm:text-[34px]">
           Rs.
         </span>
         <input
@@ -75,12 +75,12 @@ export default function AffordabilityInput({
           }}
           onChange={(event) => handleChange(event.target.value)}
           className={cn(
-            "w-full min-w-0 bg-transparent text-[40px] font-bold leading-none tracking-[-0.02em]",
+            "w-full min-w-0 bg-transparent text-[28px] font-bold leading-none tracking-[-0.02em]",
             "text-text placeholder:text-text-subtle sm:text-[52px]",
             "outline-none",
           )}
         />
-        <span className="shrink-0 text-[13px] font-medium tracking-[0.01em] text-text-subtle">
+        <span className="shrink-0 text-[11px] font-medium tracking-[0.01em] text-text-subtle sm:text-[13px]">
           / month
         </span>
       </div>
