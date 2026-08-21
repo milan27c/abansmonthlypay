@@ -42,7 +42,7 @@ export default function AffordabilityInput({
            rather than the loose body line-height. */
         className="block text-[28px] font-semibold leading-[1.15] tracking-[-0.02em] text-text sm:text-[32px]"
       >
-        How Much Can You Pay Monthly?
+        What's Your Monthly Budget?
       </label>
       <p className="mt-2 text-[15px] text-text-muted">
         Enter an amount and we will show you every phone that fits.
