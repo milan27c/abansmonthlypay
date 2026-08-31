@@ -33,7 +33,7 @@ export default function StepPersonal({
             label="Full name"
             name="fullName"
             autoComplete="name"
-            placeholder="As printed on your NIC"
+            placeholder="Enter your full name"
             value={data.fullName}
             error={errors.fullName}
             onChange={(event) => onChange("fullName", event.target.value)}
