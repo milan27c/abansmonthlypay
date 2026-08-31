@@ -2,92 +2,59 @@
 import Logo from "./Logo.astro";
 
 /**
- * Matches the reference header's tab set. Only "Pay Monthly" is a real
- * destination — this prototype doesn't have Products/Accessories/Blog/Contact
- * pages, so those render as inert labels rather than dead links.
+ * The reference header's tab set. Only "Pay Monthly" is a real destination —
+ * this prototype has no Home/Smartphones/Accessories/Offers/Contact pages, so
+ * those render as inert labels rather than dead links. "Pay Monthly" is the
+ * page we're on, so it carries the active (primary) treatment.
  */
-const inertTabs = ["Home", "Products", "Accessories", "Blog", "Contact"];
+const tabs = [
+  { label: "Home" },
+  { label: "Smartphones" },
+  { label: "Accessories" },
+  { label: "Pay Monthly", href: "/", active: true },
+  { label: "Offers" },
+  { label: "Contact" },
+];
 
-/** Decorative only — no real Abans social accounts wired up in this prototype. */
-const socialLinks = ["Facebook", "Instagram", "YouTube", "TikTok"];
+/**
+ * Rotating campaign lines — dismissible, and none has a real flow behind it.
+ * They cycle every 6s with a short cross-fade (instant under reduced motion).
+ * Edit this list to change what runs in the bar.
+ */
+const announcements = [
+  "0% interest for 12 months with participating bank cards",
+  "Trade in your old phone and save on your next one",
+  "Free island-wide delivery on orders over LKR 25,000",
+];
 ---
 
-<div class="hidden border-b border-divider bg-bg sm:block">
-  <div class="mx-auto flex h-9 max-w-[1200px] items-center gap-3 px-6">
-    {
-      socialLinks.map((label) => (
-        <a
-          href="#"
-          aria-label={label}
-          class="grid h-7 w-7 place-items-center rounded-full text-text-muted transition-colors duration-200 ease-state hover:text-primary"
-        >
-          {label === "Facebook" && (
-            <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
-              <path
-                d="M13 3.5h-1.6a3.4 3.4 0 0 0-3.4 3.4V8.8H6.2v2.8H8v5.4h2.8v-5.4h2.1l.4-2.8h-2.5V7.2c0-.66.54-1.2 1.2-1.2H13Z"
-                fill="currentColor"
-              />
-            </svg>
-          )}
-          {label === "Instagram" && (
-            <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
-              <rect
-                x="3.5"
-                y="3.5"
-                width="13"
-                height="13"
-                rx="4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-              />
-              <circle
-                cx="10"
-                cy="10"
-                r="3.3"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-              />
-              <circle cx="13.9" cy="6.1" r="0.9" fill="currentColor" />
-            </svg>
-          )}
-          {label === "YouTube" && (
-            <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
-              <rect
-                x="2.5"
-                y="5.5"
-                width="15"
-                height="9"
-                rx="3"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-              />
-              <path d="M8.7 8.3v3.4l3-1.7Z" fill="currentColor" />
-            </svg>
-          )}
-          {label === "TikTok" && (
-            <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
-              <path
-                d="M12 3.2v8.3a2.5 2.5 0 1 1-2-2.44"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <path
-                d="M12 3.2c.3 1.75 1.65 3.05 3.4 3.25"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-            </svg>
-          )}
-        </a>
-      ))
-    }
+<div
+  data-announce
+  data-announce-lines={JSON.stringify(announcements)}
+  class="bg-primary text-white"
+>
+  <div class="flex min-h-11 items-center gap-4 px-6 py-2">
+    <p
+      data-announce-text
+      class="flex-1 text-center text-[13px] font-medium tracking-[0.01em] transition-opacity duration-200 ease-state sm:text-[14px]"
+    >
+      {announcements[0]}
+    </p>
+    <button
+      type="button"
+      data-announce-close
+      aria-label="Dismiss announcement"
+      class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-white/75 transition-colors duration-200 ease-state hover:bg-white/10 hover:text-white"
+    >
+      <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true">
+        <path
+          d="m4.5 4.5 11 11M15.5 4.5l-11 11"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"></path>
+      </svg>
+    </button>
   </div>
 </div>
 
@@ -96,50 +63,54 @@ const socialLinks = ["Facebook", "Instagram", "YouTube", "TikTok"];
   class="sticky top-0 z-40 bg-bg/80 backdrop-blur-xl transition-shadow duration-200 ease-state"
 >
   <div
-    class="mx-auto flex h-18 max-w-[1200px] items-center justify-between px-6"
+    class="relative mx-auto flex h-18 max-w-[1200px] items-center justify-between px-6"
   >
     <Logo />
 
-    <div class="hidden items-center gap-6 md:flex">
-      <nav aria-label="Main" class="flex items-center gap-2">
-        {
-          inertTabs.map((label) => (
-            <span class="px-3 text-[12px] font-medium tracking-[0.02em] text-text-muted uppercase">
-              {label}
+    <nav
+      aria-label="Main"
+      class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex"
+    >
+      {
+        tabs.map((tab) =>
+          tab.active ? (
+            <a
+              href={tab.href}
+              aria-current="page"
+              class="px-3 text-[14px] font-medium text-primary transition-colors duration-200 ease-state hover:text-primary-hover"
+            >
+              {tab.label}
+            </a>
+          ) : (
+            <span class="px-3 text-[14px] font-normal text-text transition-colors duration-200 ease-state hover:text-primary">
+              {tab.label}
             </span>
-          ))
-        }
-        <a
-          href="/"
-          aria-current="page"
-          class="inline-flex h-10 items-center rounded-full bg-primary px-5 text-[12px] font-semibold tracking-[0.02em] text-white uppercase shadow-rest transition-all duration-200 ease-state hover:scale-[1.02] hover:bg-primary-hover hover:shadow-raised"
-        >
-          Pay Monthly
-        </a>
-      </nav>
+          ),
+        )
+      }
+    </nav>
 
-      <button
-        type="button"
-        aria-label="Search"
-        class="inline-flex h-10 w-10 shrink-0 items-center justify-center text-text transition-colors duration-200 ease-state hover:text-primary"
-      >
-        <svg viewBox="0 0 20 20" class="h-5 w-5" aria-hidden="true">
-          <circle
-            cx="9"
-            cy="9"
-            r="6.5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"></circle>
-          <path
-            d="m18 18-4.35-4.35"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"></path>
-        </svg>
-      </button>
-    </div>
+    <button
+      type="button"
+      aria-label="Search"
+      class="hidden h-10 w-10 shrink-0 items-center justify-center text-text transition-colors duration-200 ease-state hover:text-primary md:inline-flex"
+    >
+      <svg viewBox="0 0 20 20" class="h-5 w-5" aria-hidden="true">
+        <circle
+          cx="9"
+          cy="9"
+          r="6.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"></circle>
+        <path
+          d="m18 18-4.35-4.35"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"></path>
+      </svg>
+    </button>
 
     <button
       type="button"
@@ -188,26 +159,92 @@ const socialLinks = ["Facebook", "Instagram", "YouTube", "TikTok"];
         class="mx-auto flex max-w-[1200px] flex-col gap-2 border-t border-divider px-6 py-4"
       >
         {
-          inertTabs.map((label) => (
-            <span class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[13px] font-medium tracking-[0.02em] text-text-muted uppercase ring-1 ring-inset ring-divider">
-              {label}
-            </span>
-          ))
+          tabs.map((tab) =>
+            tab.active ? (
+              <a
+                href={tab.href}
+                aria-current="page"
+                data-menu-link
+                class="inline-flex h-11 items-center justify-center rounded-full bg-primary-soft px-5 text-[14px] font-semibold text-primary transition-colors duration-200 ease-state hover:bg-primary-softer"
+              >
+                {tab.label}
+              </a>
+            ) : (
+              <span class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[14px] font-medium text-text ring-1 ring-inset ring-divider">
+                {tab.label}
+              </span>
+            ),
+          )
         }
-        <a
-          href="/"
-          aria-current="page"
-          data-menu-link
-          class="inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 text-[13px] font-semibold tracking-[0.02em] text-white uppercase shadow-rest transition-all duration-200 ease-state hover:bg-primary-hover"
-        >
-          Pay Monthly
-        </a>
       </div>
     </nav>
   </div>
 </header>
 
 <script>
+  // Announcement bar — dismiss for the rest of the browsing session.
+  const announce = document.querySelector<HTMLElement>("[data-announce]");
+  const announceClose = document.querySelector<HTMLButtonElement>(
+    "[data-announce-close]",
+  );
+
+  if (announce && announceClose) {
+    try {
+      if (sessionStorage.getItem("announce-dismissed") === "1") {
+        announce.hidden = true;
+      }
+    } catch {
+      /* storage unavailable — bar just stays visible */
+    }
+
+    announceClose.addEventListener("click", () => {
+      announce.hidden = true;
+      try {
+        sessionStorage.setItem("announce-dismissed", "1");
+      } catch {
+        /* ignore */
+      }
+    });
+  }
+
+  // Rotate the campaign line through the list carried on data-announce-lines.
+  const announceText = document.querySelector<HTMLElement>(
+    "[data-announce-text]",
+  );
+
+  if (announce && announceText) {
+    let lines: string[] = [];
+    try {
+      lines = JSON.parse(announce.dataset.announceLines ?? "[]");
+    } catch {
+      lines = [];
+    }
+
+    if (lines.length > 1) {
+      const reduce = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      let index = 0;
+
+      window.setInterval(() => {
+        // Skip while dismissed or the tab is in the background.
+        if (announce.hidden || document.hidden) return;
+        index = (index + 1) % lines.length;
+
+        if (reduce) {
+          announceText.textContent = lines[index];
+          return;
+        }
+
+        announceText.classList.add("opacity-0");
+        window.setTimeout(() => {
+          announceText.textContent = lines[index];
+          announceText.classList.remove("opacity-0");
+        }, 200);
+      }, 6000);
+    }
+  }
+
   const nav = document.querySelector<HTMLElement>("[data-nav]");
 
   if (nav) {
