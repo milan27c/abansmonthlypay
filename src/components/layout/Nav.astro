@@ -2,17 +2,18 @@
 import Logo from "./Logo.astro";
 
 /**
- * The reference header's tab set. Only "Pay Monthly" is a real destination —
- * this prototype has no Home/Smartphones/Accessories/Offers/Contact pages, so
- * those render as inert labels rather than dead links. "Pay Monthly" is the
- * page we're on, so it carries the active (primary) treatment.
+ * The reference header's tab set. "Pay Monthly" is this prototype's own page and
+ * carries the active (primary) treatment. Home / Smartphones / Accessories /
+ * Offers point at the main Abans storefront (a separate site). "Contact" has no
+ * destination yet, so it renders as an inert label rather than a dead link.
  */
+const store = "https://abanssmartphones1.vercel.app";
 const tabs = [
-  { label: "Home" },
-  { label: "Smartphones" },
-  { label: "Accessories" },
+  { label: "Home", href: `${store}/` },
+  { label: "Smartphones", href: `${store}/products?category=smartphones` },
+  { label: "Accessories", href: `${store}/products?category=accessories` },
   { label: "Pay Monthly", href: "/", active: true },
-  { label: "Offers" },
+  { label: "Offers", href: `${store}/products?filter=offers` },
   { label: "Contact" },
 ];
 
@@ -65,6 +66,13 @@ const announcement = "Trade in your old phone and save on your next one";
               href={tab.href}
               aria-current="page"
               class="px-3 text-[14px] font-medium text-primary transition-colors duration-200 ease-state hover:text-primary-hover"
+            >
+              {tab.label}
+            </a>
+          ) : tab.href ? (
+            <a
+              href={tab.href}
+              class="px-3 text-[14px] font-normal text-text transition-colors duration-200 ease-state hover:text-primary"
             >
               {tab.label}
             </a>
@@ -153,6 +161,13 @@ const announcement = "Trade in your old phone and save on your next one";
                 aria-current="page"
                 data-menu-link
                 class="inline-flex h-11 items-center justify-center rounded-full bg-primary-soft px-5 text-[14px] font-semibold text-primary transition-colors duration-200 ease-state hover:bg-primary-softer"
+              >
+                {tab.label}
+              </a>
+            ) : tab.href ? (
+              <a
+                href={tab.href}
+                class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[14px] font-medium text-text ring-1 ring-inset ring-divider transition-colors duration-200 ease-state hover:text-primary"
               >
                 {tab.label}
               </a>
