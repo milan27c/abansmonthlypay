@@ -16,29 +16,16 @@ const tabs = [
   { label: "Contact" },
 ];
 
-/**
- * Rotating campaign lines — dismissible, and none has a real flow behind it.
- * They cycle every 6s with a short cross-fade (instant under reduced motion).
- * Edit this list to change what runs in the bar.
- */
-const announcements = [
-  "0% interest for 12 months with participating bank cards",
-  "Trade in your old phone and save on your next one",
-  "Free island-wide delivery on orders over LKR 25,000",
-];
+/** Standing campaign line — dismissible, no real trade-in flow behind it. */
+const announcement = "Trade in your old phone and save on your next one";
 ---
 
-<div
-  data-announce
-  data-announce-lines={JSON.stringify(announcements)}
-  class="bg-primary text-white"
->
+<div data-announce class="bg-primary text-white">
   <div class="flex min-h-11 items-center gap-4 px-6 py-2">
     <p
-      data-announce-text
-      class="flex-1 text-center text-[13px] font-medium tracking-[0.01em] transition-opacity duration-200 ease-state sm:text-[14px]"
+      class="flex-1 text-center text-[13px] font-medium tracking-[0.01em] sm:text-[14px]"
     >
-      {announcements[0]}
+      {announcement}
     </p>
     <button
       type="button"
@@ -205,44 +192,6 @@ const announcements = [
         /* ignore */
       }
     });
-  }
-
-  // Rotate the campaign line through the list carried on data-announce-lines.
-  const announceText = document.querySelector<HTMLElement>(
-    "[data-announce-text]",
-  );
-
-  if (announce && announceText) {
-    let lines: string[] = [];
-    try {
-      lines = JSON.parse(announce.dataset.announceLines ?? "[]");
-    } catch {
-      lines = [];
-    }
-
-    if (lines.length > 1) {
-      const reduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      let index = 0;
-
-      window.setInterval(() => {
-        // Skip while dismissed or the tab is in the background.
-        if (announce.hidden || document.hidden) return;
-        index = (index + 1) % lines.length;
-
-        if (reduce) {
-          announceText.textContent = lines[index];
-          return;
-        }
-
-        announceText.classList.add("opacity-0");
-        window.setTimeout(() => {
-          announceText.textContent = lines[index];
-          announceText.classList.remove("opacity-0");
-        }, 200);
-      }, 6000);
-    }
   }
 
   const nav = document.querySelector<HTMLElement>("[data-nav]");
