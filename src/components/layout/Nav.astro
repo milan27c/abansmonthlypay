@@ -17,6 +17,25 @@ const tabs = [
   { label: "Contact" },
 ];
 
+/**
+ * "Shop by brand" grid inside the mobile menu — mirrors the storefront's own
+ * menu. Wordmarks live in `public/brands/` on white, so they need
+ * `mix-blend-multiply` on the tinted tile. Each tile links to the storefront
+ * filtered by brand. `redmi.png` is the orange Mi glyph the reference uses for
+ * Xiaomi.
+ */
+const menuBrands = [
+  { slug: "apple", name: "Apple", logo: "/brands/apple.png" },
+  { slug: "xiaomi", name: "Xiaomi", logo: "/brands/redmi.png" },
+  { slug: "motorola", name: "Motorola", logo: "/brands/motorola.png" },
+  { slug: "oppo", name: "Oppo", logo: "/brands/oppo.png" },
+  { slug: "vivo", name: "Vivo", logo: "/brands/vivo.png" },
+  { slug: "realme", name: "Realme", logo: "/brands/realme.png" },
+  { slug: "itel", name: "Itel", logo: "/brands/itel.png" },
+  { slug: "tecno", name: "Tecno", logo: "/brands/tecno.png" },
+  { slug: "infinix", name: "Infinix", logo: "/brands/infinix.png" },
+];
+
 /** Standing campaign line — dismissible, no real trade-in flow behind it. */
 const announcement = "Trade in your old phone and save on your next one";
 ---
@@ -143,45 +162,102 @@ const announcement = "Trade in your old phone and save on your next one";
       </svg>
     </button>
   </div>
+</header>
 
-  <div
-    id="mobile-menu"
-    data-mobile-menu
-    class="absolute inset-x-0 top-full grid grid-rows-[0fr] bg-bg/95 shadow-raised backdrop-blur-xl transition-[grid-template-rows] duration-200 ease-state md:hidden"
-  >
-    <nav aria-label="Mobile" class="overflow-hidden">
-      <div
-        class="mx-auto flex max-w-[1200px] flex-col gap-2 border-t border-divider px-6 py-4"
+<!--
+  Rendered as a body-level sibling, not inside <header>: the header's
+  `backdrop-blur` establishes a containing block for `position: fixed`, which
+  would otherwise pin this sheet to the 72px header box instead of the viewport.
+-->
+<div
+  id="mobile-menu"
+  data-mobile-menu
+  class="pointer-events-none fixed inset-0 z-50 translate-y-2 overflow-y-auto bg-bg opacity-0 transition-[opacity,transform] duration-300 ease-state md:hidden"
+>
+    <div class="mx-auto min-h-full w-full max-w-[560px] px-6 pb-16 pt-5">
+      <div class="flex justify-end">
+        <button
+          type="button"
+          data-menu-close
+          aria-label="Close menu"
+          class="grid h-11 w-11 place-items-center rounded-full text-text transition-colors duration-200 ease-state hover:text-primary"
+        >
+          <svg viewBox="0 0 20 20" class="h-5 w-5" aria-hidden="true">
+            <path
+              d="m4.5 4.5 11 11M15.5 4.5l-11 11"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+
+      <nav
+        aria-label="Mobile"
+        class="mt-1 flex flex-col divide-y divide-divider"
       >
+        <a
+          href={tabs[0].href}
+          class="block py-6 text-[26px] font-semibold tracking-[-0.02em] text-text transition-colors duration-200 ease-state hover:text-primary"
+        >
+          {tabs[0].label}
+        </a>
+
+        <a
+          href={tabs[1].href}
+          class="block py-6 text-[26px] font-semibold tracking-[-0.02em] text-text transition-colors duration-200 ease-state hover:text-primary"
+        >
+          {tabs[1].label}
+        </a>
+
+        <div class="py-6">
+          <p
+            class="text-[13px] font-medium uppercase tracking-[0.12em] text-text-muted"
+          >
+            Shop by brand
+          </p>
+          <div class="mt-5 grid grid-cols-3 gap-3 sm:gap-4">
+            {
+              menuBrands.map((brand) => (
+                <a
+                  href={`${store}/products?brand=${brand.slug}`}
+                  aria-label={brand.name}
+                  class="flex aspect-[16/11] items-center justify-center rounded-2xl bg-text/[0.04] transition-colors duration-200 ease-state hover:bg-text/[0.06]"
+                >
+                  <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    loading="lazy"
+                    class="max-h-7 max-w-[68%] object-contain mix-blend-multiply"
+                  />
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
         {
-          tabs.map((tab) =>
-            tab.active ? (
+          tabs.slice(2).map((tab) =>
+            tab.href ? (
               <a
                 href={tab.href}
-                aria-current="page"
-                data-menu-link
-                class="inline-flex h-11 items-center justify-center rounded-full bg-primary-soft px-5 text-[14px] font-semibold text-primary transition-colors duration-200 ease-state hover:bg-primary-softer"
-              >
-                {tab.label}
-              </a>
-            ) : tab.href ? (
-              <a
-                href={tab.href}
-                class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[14px] font-medium text-text ring-1 ring-inset ring-divider transition-colors duration-200 ease-state hover:text-primary"
+                data-menu-link={tab.active ? "" : undefined}
+                aria-current={tab.active ? "page" : undefined}
+                class="block py-6 text-[26px] font-semibold tracking-[-0.02em] text-text transition-colors duration-200 ease-state hover:text-primary"
               >
                 {tab.label}
               </a>
             ) : (
-              <span class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[14px] font-medium text-text ring-1 ring-inset ring-divider">
+              <span class="block py-6 text-[26px] font-semibold tracking-[-0.02em] text-text">
                 {tab.label}
               </span>
             ),
           )
         }
-      </div>
-    </nav>
-  </div>
-</header>
+      </nav>
+    </div>
+</div>
 
 <script>
   // Announcement bar — dismiss for the rest of the browsing session.
@@ -224,6 +300,9 @@ const announcement = "Trade in your old phone and save on your next one";
   const menuToggle = document.querySelector<HTMLButtonElement>(
     "[data-menu-toggle]",
   );
+  const menuClose = document.querySelector<HTMLButtonElement>(
+    "[data-menu-close]",
+  );
   const mobileMenu = document.querySelector<HTMLElement>("[data-mobile-menu]");
   const iconMenu = document.querySelector<SVGElement>("[data-icon-menu]");
   const iconClose = document.querySelector<SVGElement>("[data-icon-close]");
@@ -232,15 +311,20 @@ const announcement = "Trade in your old phone and save on your next one";
     const setOpen = (open: boolean) => {
       menuToggle.setAttribute("aria-expanded", String(open));
       menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      mobileMenu.classList.toggle("grid-rows-[1fr]", open);
-      mobileMenu.classList.toggle("grid-rows-[0fr]", !open);
+      // Full-screen sheet — fade + settle, and pin the page behind it.
+      mobileMenu.classList.toggle("opacity-0", !open);
+      mobileMenu.classList.toggle("pointer-events-none", !open);
+      mobileMenu.classList.toggle("translate-y-2", !open);
       iconMenu.classList.toggle("hidden", open);
       iconClose.classList.toggle("hidden", !open);
+      document.body.style.overflow = open ? "hidden" : "";
     };
 
     menuToggle.addEventListener("click", () => {
       setOpen(menuToggle.getAttribute("aria-expanded") !== "true");
     });
+
+    menuClose?.addEventListener("click", () => setOpen(false));
 
     // Closing on link activation covers the one real destination in the menu.
     mobileMenu
@@ -249,17 +333,6 @@ const announcement = "Trade in your old phone and save on your next one";
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") setOpen(false);
-    });
-
-    document.addEventListener("click", (event) => {
-      const target = event.target as Node;
-      if (
-        menuToggle.getAttribute("aria-expanded") === "true" &&
-        !mobileMenu.contains(target) &&
-        !menuToggle.contains(target)
-      ) {
-        setOpen(false);
-      }
     });
   }
 </script>
