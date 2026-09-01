@@ -56,7 +56,6 @@ export const STEP_FIELDS: ReadonlyArray<ReadonlyArray<keyof ApplicationData>> =
   [
     ["fullName", "email", "phone", "province", "district"],
     ["showroom"],
-    [],
   ];
 
 /** Validates one step and returns only the errors for that step's fields. */

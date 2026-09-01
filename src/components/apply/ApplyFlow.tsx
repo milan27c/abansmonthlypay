@@ -14,11 +14,10 @@ import {
 import Button from "../ui/Button";
 import Confirmation from "./Confirmation";
 import StepPersonal from "./StepPersonal";
-import StepReview from "./StepReview";
 import StepShowroom from "./StepShowroom";
 import Stepper from "./Stepper";
 
-const STEPS = ["Your Details", "Showroom", "Review"];
+const STEPS = ["Your Details", "Showroom"];
 const LAST_STEP = STEPS.length - 1;
 
 /**
@@ -122,6 +121,13 @@ export default function ApplyFlow() {
   };
 
   const handleSubmit = async () => {
+    const stepErrors = validateStep(step, data);
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors((current) => ({ ...current, ...stepErrors }));
+      return;
+    }
+
     setSubmitting(true);
 
     // No email is actually sent. Stand in for the round trip with a delay.
@@ -234,7 +240,7 @@ export default function ApplyFlow() {
           Enquire For This Device
         </h1>
         <p className="mt-2 max-w-lg text-[16px] text-text-muted">
-          Three short steps. Nothing is charged and no payment details are
+          Two short steps. Nothing is charged and no payment details are
           needed.
         </p>
       </div>
@@ -266,15 +272,6 @@ export default function ApplyFlow() {
                   data={data}
                   errors={errors}
                   onChange={handleChange}
-                />
-              )}
-
-              {step === 2 && (
-                <StepReview
-                  data={data}
-                  device={device}
-                  plan={plan}
-                  onEdit={goTo}
                 />
               )}
 

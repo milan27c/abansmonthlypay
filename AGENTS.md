@@ -41,10 +41,8 @@ Landing (/)
         └─ Device detail modal — front view, key specs, monthly plan breakdown
               └─ "Apply for this device"
                     └─ Application stepper (/apply)
-                          1. Personal      name, email, phone, NIC
-                          2. Location      address, province → district
-                          3. Showroom      showrooms filtered by district
-                          4. Review        summary of everything above
+                          1. Your Details  name, email, phone, province → district
+                          2. Showroom      showrooms filtered by district
                     └─ Confirmation screen
 ```
 
@@ -291,8 +289,7 @@ src/
     home/        Hero, Shop, AffordabilityInput, BrandFilter, DeviceGrid, DeviceCard,
                  HowItWorks, ShowroomStrip
     device/      DeviceModal, SpecList, PlanBreakdown
-    apply/       ApplyFlow, Stepper, StepPersonal, StepLocation, StepShowroom,
-                 StepReview, Confirmation
+    apply/       ApplyFlow, Stepper, StepPersonal, StepShowroom, Confirmation
     ui/          Button, Input, Select, Chip, Card, Modal, Reveal
   data/
   layouts/
